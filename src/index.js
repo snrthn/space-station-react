@@ -3,8 +3,14 @@
  * @author yanghuning
  */
 
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from 'views/Home';
+
 import './styles/reset.css';
 import './styles/global.css';
-import './styles/fonts.css';
 
-import './scripts/demo.js';
+ReactDOM.render(
+    <App/>,
+    document.getElementById('root')
+);

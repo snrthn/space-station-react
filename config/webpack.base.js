@@ -40,7 +40,7 @@ module.exports = {
                         loader: 'babel-loader',
                         options: {
                             presets: [
-                                'babel-preset-stage-0',
+                                'babel-preset-stage-0', 'babel-preset-react',
                                 ['env', {
                                     modules: false,
                                     targets: {
@@ -62,6 +62,28 @@ module.exports = {
                         dirPath: '../../'
                     }
                 }, 'css-loader', 'postcss-loader'],
+                exclude: path.resolve(__dirname, 'node_modules')
+            },
+            {
+                test: /\.less$/i,
+                use: [MiniCssExtractPlugin.loader, {
+                    loader: path.resolve(__dirname, 'utils/handleUrl'),
+                    options: {
+                        publicPath: config.assetsPublicPath,
+                        dirPath: '../../'
+                    }
+                }, 'css-loader', 'postcss-loader', 'less-loader'],
+                exclude: path.resolve(__dirname, 'node_modules')
+            },
+            {
+                test: /\.sass$/i,
+                use: [MiniCssExtractPlugin.loader, {
+                    loader: path.resolve(__dirname, 'utils/handleUrl'),
+                    options: {
+                        publicPath: config.assetsPublicPath,
+                        dirPath: '../../'
+                    }
+                }, 'css-loader', 'postcss-loader', 'sass-loader'],
                 exclude: path.resolve(__dirname, 'node_modules')
             },
             {
@@ -107,9 +129,13 @@ module.exports = {
     },
     // 解决方案
     resolve: {
-        extensions: ['.js', '.json'],
+        extensions: ['.js', '.json', '.jsx'],
         alias: {
-            '@': path.resolve(__dirname, '../src')
+            '@': path.resolve(__dirname, '../src'),
+            'views': path.resolve(__dirname, '../src/views'),
+            'assets': path.resolve(__dirname, '../src/assets'),
+            'styles': path.resolve(__dirname, '../src/styles'),
+            'utils': path.resolve(__dirname, '../src/utils')
         }
     },
     // 性能
