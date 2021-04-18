@@ -1,0 +1,10 @@
+
+.founder {
+    font-family: fzblod;
+    font-size: 18px;
+}
+
+@font-face {
+    font-family: 'fzblod';
+    src: url('../assets/fonts/fzblod.TTF');
+}
