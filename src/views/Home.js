@@ -19,9 +19,10 @@ class Home extends Component {
                 <div className="content">当你刚开始一个 React 应用时，通过 HTML 的 script 标签引入 React 依然是最好的选项，因为这能让你的项目立即启动。</div>
                 <div className="content">但随着应用越来越大，你可能会需要更加集成化的安装方式。我们推荐了一些 JavaScript 工具链，它们适合大型应用。它们只需很少甚至零配置，就能让你充分利用丰富的 React 生态。立即尝试。</div>
 
-                <img className="start" src={ require('assets/images/start.jpg') } title="飞船" />
-
-                <audio src={ require('assets/media/20210325.mp3') } controls />
+                <div className="item">
+                    <img className="start" src={ require('assets/images/start.jpg') } title="飞船" />
+                    <audio src={ require('assets/media/20210325.mp3') } controls />
+                </div>
 
             </div>
         )

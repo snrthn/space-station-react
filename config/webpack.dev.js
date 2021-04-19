@@ -2,10 +2,10 @@
 process.env.TAG = 'dev';
 
 let path = require('path');
-const portfinder = require('portfinder');
+let portfinder = require('portfinder');
 let { merge } = require('webpack-merge');
 let webpackBaseConfig = require('./webpack.base');
-const FriendlyErrorsPlugin = require('@soda/friendly-errors-webpack-plugin');
+let FriendlyErrorsPlugin = require('@soda/friendly-errors-webpack-plugin');
 let config = require('./')[process.env.TAG];
 
 let HOST = process.env.HOST;
@@ -21,6 +21,7 @@ let devConfig = merge(webpackBaseConfig, {
         port: PORT || config.port,
         open: config.autoOpenBrowser,
         proxy: config.proxyTable,
+        clientLogLevel: 'none',
         inline: true,
         quiet: true
     },
