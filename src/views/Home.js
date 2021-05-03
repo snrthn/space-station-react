@@ -21,9 +21,9 @@ class Home extends Component {
 
                 <div className="item">
                     <img className="start" src={ require('assets/images/start.jpg') } title="飞船" />
+                    <img src={ require('assets/images/react.png') } title="飞船" />
                     <audio src={ require('assets/media/20210325.mp3') } controls />
                 </div>
-
             </div>
         )
     }
