@@ -1,7 +1,7 @@
 {
   "name": "space-station-react",
   "version": "1.0.0",
-  "description": "国际空间站",
+  "description": "中国空间站",
   "main": "./src/index.js",
   "scripts": {
     "dev": "webpack-dev-server --progress --config config/webpack.dev.js",
@@ -53,6 +53,11 @@
     "postcss-loader": "^5.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-redux": "^7.2.4",
+    "react-router-dom": "^5.2.0",
+    "redux": "^4.1.0",
+    "redux-saga": "^1.1.3",
+    "redux-thunk": "^2.3.0",
     "sass": "^1.32.10",
     "sass-loader": "^11.0.1",
     "style-loader": "^2.0.0",
