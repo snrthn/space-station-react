@@ -25,7 +25,7 @@ function mapStateToProps (state) {
 function mapDispatchToActions (dispatch) {
     return {
         ConsumeBuy () {
-            let action = ConsumeBuy(this.refs.amtVal.value * 1, this.refs.amtVal);
+            let action = ConsumeBuy(this.refs.amtVal);
             dispatch(action);
         }
     };

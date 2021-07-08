@@ -25,7 +25,7 @@ function mapStateToProps (state) {
 function mapDispatchToActions (dispatch) {
     return {
         RechargeAdd () {
-            let action = RechargeAdd(this.refs.amtVal.value * 1, this.refs.amtVal);
+            let action = RechargeAdd(this.refs.amtVal);
             dispatch(action);
         }
     };

@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getBalance } from '../store/actionCreators';
 
-import Store from '../store';
-
 class Balance extends Component {
     constructor (props) {
         super(props);
@@ -32,7 +30,7 @@ function mapStateToProps (state) {
 function mapDispatchToActions (dispatch) {
     return {
         getBalance () {
-            let action = getBalance()
+            let action = getBalance();
             dispatch(action);
         }
     };
