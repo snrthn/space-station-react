@@ -53,15 +53,19 @@ function * queryInterviewListHandle (action) {
 
 // 新增数据
 function * addInterviewInfoHandle (action) {
-    let { data } = action;
+    let { vm, data } = action;
     let retData = null;
 
     yield addInterviewInfo({ data }).then(result => {
         // 结果赋值
         retData = result;
+        
+        // 更新数据
+        vm.setState({
+            loading: false
+        })
 
         // 跳转页面
-        let vm = action.vm;
         vm.props.history.push('/datalist');
     })
     
@@ -75,15 +79,19 @@ function * addInterviewInfoHandle (action) {
 
 // 更新数据
 function * updateInterviewInfoHandle (action) {
-    let { id, data } = action;
+    let { vm, id, data } = action;
     let retData = null;
 
     yield updateInterviewInfo({ id, data }).then(result => {
         // 结果赋值
         retData = result;
+        
+        // 更新数据
+        vm.setState({
+            loading: false
+        })
 
         // 跳转页面
-        let vm = action.vm;
         vm.props.history.push('/datalist');
 
     })

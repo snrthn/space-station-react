@@ -59,21 +59,9 @@ export default function (state = defaultStatus, action) {
 
     } else if (action.type === ADD_INTERVIEW_DATA) {
         let newState = JSON.parse(JSON.stringify(state));
-
-        // 更新页面数据
-        vm.setState({
-            loading: false
-        })
-
         return newState;
     } else if (action.type === UPDATE_INTERVIEW_DATA) {
-        let newState = JSON.parse(JSON.stringify(state));
-
-        // 更新页面数据
-        vm.setState({
-            loading: false
-        })
-        
+        let newState = JSON.parse(JSON.stringify(state));        
         return newState;
     } else if (action.type === REMOVE_INTERVIEW_DATA) {
         let newState = JSON.parse(JSON.stringify(state));
