@@ -314,7 +314,7 @@ function mapDispatchToActions (dispatch) {
             }))
         },
         // 删除
-        deleteInterviewImageFile (vm, filePath) {
+        deleteInterviewImageFile (vm, filepath) {
             dispatch(deleteFileImage({
                 vm,
                 data: {

@@ -38,35 +38,13 @@ function * queryInterviewListHandle (action) {
     yield queryInterviewList({
         params: action.params
     }).then(result => {
-
-        let vm = action.vm;
-
-        if (action.id) {
-            let formData = result.interview[0];
-            let fileList = vm.state.fileList;
-            fileList.push({
-                uid: -1,
-                name: formData.interview_img.substr(formData.interview_img.lastIndexOf('/') + 1),
-                thumbUrl: formData.interview_img,
-                url: formData.interview_img
-            })
-            vm.setState({
-                formData
-            })
-            vm.formRef.current.setFieldsValue(formData);
-        } else {
-            // 移除页面中的 Loading
-            vm.setState({
-                loading: false,
-                total: result._results
-            })
-        }
-
-        // 将请求结果赋值并返回
+        // 结果赋值
         retData = result;
     })
     
     yield put({
+        vm: action.vm,
+        id: action.id,
         type: GET_INTERVIEW_DATA,
         data: retData
     })
@@ -75,20 +53,20 @@ function * queryInterviewListHandle (action) {
 
 // 新增数据
 function * addInterviewInfoHandle (action) {
+    let { data } = action;
     let retData = null;
 
-    yield addInterviewInfo({
-        data: action.data
-    }).then(result => {
+    yield addInterviewInfo({ data }).then(result => {
+        // 结果赋值
+        retData = result;
 
         // 跳转页面
         let vm = action.vm;
         vm.props.history.push('/datalist');
-
-        retData = result;
     })
     
     yield put({
+        vm: action.vm,
         type: ADD_INTERVIEW_DATA,
         data: retData
     })
@@ -97,22 +75,21 @@ function * addInterviewInfoHandle (action) {
 
 // 更新数据
 function * updateInterviewInfoHandle (action) {
+    let { id, data } = action;
     let retData = null;
-    
 
-    yield updateInterviewInfo({
-        id: action.id,
-        data: action.data
-    }).then(result => {
+    yield updateInterviewInfo({ id, data }).then(result => {
+        // 结果赋值
+        retData = result;
 
         // 跳转页面
         let vm = action.vm;
         vm.props.history.push('/datalist');
 
-        retData = result;
     })
     
     yield put({
+        vm: action.vm,
         type: UPDATE_INTERVIEW_DATA,
         data: retData
     })
@@ -121,20 +98,21 @@ function * updateInterviewInfoHandle (action) {
 
 // 删除数据
 function * deleteInterviewInfoHandle (action) {
+    let { id } = action;
     let retData = null;
 
-    yield deleteInterviewInfo({
-        id: action.id
-    }).then(result => {
+    yield deleteInterviewInfo({ id }).then(result => {
+        // 结果赋值
+        retData = result;
 
-        // 重新拉取数据
+        // 更新页面数据
         let vm = action.vm;
         vm.props.fetchInterviewDataList(vm);
 
-        retData = result;
     })
     
     yield put({
+        vm: action.vm,
         type: REMOVE_INTERVIEW_DATA,
         data: retData
     })
@@ -143,30 +121,17 @@ function * deleteInterviewInfoHandle (action) {
 
 // 上传文件
 function * uploadFileHandleHandle (action) {
+    let { data } = action;
     let retData = null;
 
-    yield uploadFileHandle(action).then(result => {
-
-        // 更新页面数据
-        let vm = action.vm;
-        let url = result.data.file[0];
-        let fileList = vm.state.fileList;
-        fileList.push({
-            uid: action.updObj.file.uid,
-            name: action.updObj.file.name,
-            thumbUrl: url,
-            url
-        })
-
-        vm.state.formData.interview_img = url;
-        vm.setState({
-            formData: vm.state.formData
-        });
-
+    yield uploadFileHandle({ data }).then(result => {
+        // 结果赋值
         retData = result;
     })
     
     yield put({
+        vm: action.vm,
+        updObj: action.updObj,
         type: UPLOAD_FILE_IMAGE,
         data: retData
     })
@@ -175,13 +140,16 @@ function * uploadFileHandleHandle (action) {
 
 // 文件删除
 function * deleteFileHandleHandle (action) {
+    let { data } = action;
     let retData = null;
 
-    yield deleteFileHandle(action).then(result => {
+    yield deleteFileHandle({ data }).then(result => {
+        // 结果赋值
         retData = result;
     })
     
     yield put({
+        vm: action.vm,
         type: DELETE_FILE_IMAGE,
         data: retData
     })
