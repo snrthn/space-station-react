@@ -33,13 +33,43 @@ import {
 
 // 获取数据
 function * queryInterviewListHandle (action) {
+    let { id, params, vm } = action;
     let retData = null;
 
-    yield queryInterviewList({
-        params: action.params
-    }).then(result => {
+    yield queryInterviewList({ params }).then(result => {
         // 结果赋值
         retData = result;
+        
+        // 更新数据
+        if (id) {
+
+            // 在Form表单中运行
+            let formData = retData.interview[0];
+            let fileList = vm.state.fileList;
+
+            fileList.push({
+                uid: -1,
+                name: formData.interview_img.substr(formData.interview_img.lastIndexOf('/') + 1),
+                thumbUrl: formData.interview_img,
+                url: formData.interview_img
+            })
+
+            vm.setState({
+                formData
+            })
+
+            // 把详情更新到页面
+            vm.formRef.current.setFieldsValue(formData);
+
+        } else {
+    
+            // 结果赋值
+            vm.setState({
+                loading: false,
+                total: retData._results
+            })
+        }
+
     })
     
     yield put({
@@ -53,7 +83,7 @@ function * queryInterviewListHandle (action) {
 
 // 新增数据
 function * addInterviewInfoHandle (action) {
-    let { vm, data } = action;
+    let { data, vm } = action;
     let retData = null;
 
     yield addInterviewInfo({ data }).then(result => {
@@ -63,10 +93,12 @@ function * addInterviewInfoHandle (action) {
         // 更新数据
         vm.setState({
             loading: false
+        }, () => {
+            
+            // 跳转页面
+            vm.props.history.push('/datalist');
+            
         })
-
-        // 跳转页面
-        vm.props.history.push('/datalist');
     })
     
     yield put({
@@ -79,7 +111,7 @@ function * addInterviewInfoHandle (action) {
 
 // 更新数据
 function * updateInterviewInfoHandle (action) {
-    let { vm, id, data } = action;
+    let { id, data, vm } = action;
     let retData = null;
 
     yield updateInterviewInfo({ id, data }).then(result => {
@@ -89,10 +121,12 @@ function * updateInterviewInfoHandle (action) {
         // 更新数据
         vm.setState({
             loading: false
-        })
+        }, () => {
+            
+            // 跳转页面
+            vm.props.history.push('/datalist');
 
-        // 跳转页面
-        vm.props.history.push('/datalist');
+        })
 
     })
     
@@ -113,7 +147,7 @@ function * deleteInterviewInfoHandle (action) {
         // 结果赋值
         retData = result;
 
-        // 更新页面数据
+        // 更新数据
         let vm = action.vm;
         vm.props.fetchInterviewDataList(vm);
 
@@ -129,17 +163,33 @@ function * deleteInterviewInfoHandle (action) {
 
 // 上传文件
 function * uploadFileHandleHandle (action) {
-    let { data } = action;
+    let { vm, updObj, data } = action;
     let retData = null;
 
     yield uploadFileHandle({ data }).then(result => {
         // 结果赋值
         retData = result;
+
+        // 更新数据
+        let url = retData.data.file[0];
+        let fileList = vm.state.fileList;
+
+        fileList.push({
+            uid: updObj.file.uid,
+            name: updObj.file.name,
+            thumbUrl: url,
+            url
+        })
+
+        vm.state.formData.interview_img = url;
+
+        vm.setState({
+            formData: vm.state.formData
+        });
     })
     
     yield put({
         vm: action.vm,
-        updObj: action.updObj,
         type: UPLOAD_FILE_IMAGE,
         data: retData
     })
