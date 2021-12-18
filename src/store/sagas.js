@@ -174,17 +174,14 @@ function * uploadFileHandleHandle (action) {
         let url = retData.data.file[0];
         let fileList = vm.state.fileList;
 
-        fileList.push({
-            uid: updObj.file.uid,
-            name: updObj.file.name,
-            thumbUrl: url,
-            url
-        })
+        fileList[0].status = 'success';
+        fileList[0].name = url.substr(url.lastIndexOf('/') + 1);
 
         vm.state.formData.interview_img = url;
 
         vm.setState({
-            formData: vm.state.formData
+            formData: vm.state.formData,
+            fileList
         });
     })
     

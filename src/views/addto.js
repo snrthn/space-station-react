@@ -213,6 +213,7 @@ class Addto extends Component {
         //     let fileList = this.state.fileList;
         //     fileList.push({
         //         uid: updObj.file.uid,
+        //         status: 'uploading',
         //         name: updObj.file.name,
         //         thumbUrl: url,
         //         url
@@ -323,6 +324,25 @@ function mapDispatchToActions (dispatch) {
         },
         // 上传
         uploadInterviewImageFile (vm, updObj) {
+
+            let url = updObj.file[0];
+            let fileList = vm.state.fileList;
+
+            fileList.push({
+                uid: updObj.file.uid,
+                status: 'uploading',
+                name: updObj.file.name,
+                thumbUrl: url,
+                url
+            })
+
+            vm.state.formData.interview_img = url;
+
+            vm.setState({
+                formData: vm.state.formData,
+                fileList
+            })
+
             dispatch(uploadFileImage({
                 vm,
                 updObj,
