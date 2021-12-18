@@ -5,7 +5,9 @@ import zhCN from 'antd/es/locale/zh_CN';
 
 import { Row, Col, Table, ConfigProvider, Pagination, Space, Button, Popconfirm, Input, message } from 'antd';
 
-import { queryInterviewList, deleteInterviewInfo } from 'api/interview';
+import ImgPreView from 'components/imgpreview';
+
+// import { queryInterviewList, deleteInterviewInfo } from 'api/interview';
 
 import { getInterviewData, removeInterviewData, deleteFileImage } from 'store/actionCreators';
 
@@ -83,7 +85,10 @@ class Datalist extends Component {
             loading: true,
             pageSize: 10,
             pageNum: 1,
-            total: 0
+            total: 0,
+
+            showMask: false,
+            curImgSrc: ''
         }
     }
 
@@ -92,7 +97,7 @@ class Datalist extends Component {
     }
 
     render() {
-        const { selectedRowKeys, searchKey, columns, pageNum, total, loading } = this.state;
+        const { selectedRowKeys, searchKey, columns, pageNum, total, loading, showMask, curImgSrc } = this.state;
 
         const { dataList } = this.props;
 
@@ -162,6 +167,8 @@ class Datalist extends Component {
 
                 <Pagination style={{ margin: '16px 8px', textAlign: 'right' }} current={pageNum} total={total} showSizeChanger={false} onChange={ (page, size) => { this.changeClickHandle(page, size) } } />
 
+                { showMask ? <ImgPreView src={ curImgSrc } closeHandle={ () => { this.closeMskHandle() } } /> : '' }
+
             </div>
         )
     }
@@ -213,17 +220,29 @@ class Datalist extends Component {
 
     // 点击查看图片
     showImageHandle (text, row) {
+
         if (!text) {
             message.warning('还没有上传图片');
             return;
         }
-        window.open(text, '_blank');
+
+        this.setState({
+            curImgSrc: text,
+            showMask: true
+        })
+    }
+
+    // 关闭图片预览
+    closeMskHandle () {
+        this.setState({
+            showMask: false
+        })
     }
 
     // 选择复选框
     onSelectChange (selectedRowKeys) {
         this.setState({ selectedRowKeys });
-    };
+    }
 
     // 跳转到编辑页面
     editHandle (row) {

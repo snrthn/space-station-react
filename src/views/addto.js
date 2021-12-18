@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
-import { Form, Input, Button, Upload, Row, Col, message } from 'antd';
+import { Form, Input, Button, Upload, Row, Col } from 'antd';
 import { UserOutlined, HomeOutlined, MonitorOutlined, FieldTimeOutlined, MessageOutlined } from '@ant-design/icons';
 
-import { queryInterviewList, addInterviewInfo, updateInterviewInfo, uploadFileHandle } from 'api/interview';
+import ImgPreView from 'components/imgpreview';
+
+// import { queryInterviewList, addInterviewInfo, updateInterviewInfo, uploadFileHandle } from 'api/interview';
 
 import { getInterviewData, addInterviewData, updateInterviewData, uploadFileImage, deleteFileImage } from 'store/actionCreators';
 
@@ -28,8 +30,12 @@ class Addto extends Component {
                 interview_img: ''
             },
             curId: '',
+            showModal: false,
             loading: false,
-            fileList: []
+            fileList: [],
+
+            showMask: false,
+            curImgSrc: ''
         }
 
         this.formRef = React.createRef();
@@ -54,6 +60,8 @@ class Addto extends Component {
     }
 
     render () {
+
+        let { showMask, curImgSrc } = this.state;
 
         return (
             <div className="app-addto">
@@ -117,6 +125,7 @@ class Addto extends Component {
                             listType="picture"
                             fileList={ this.state.fileList }
                             customRequest={ (fileObj) => { this.uploadHandle(fileObj) } }
+                            onPreview={ (fileObj) => { this.handlePreview(fileObj) } }
                             onRemove={ (fileObj) => { this.onRemove(fileObj) } }
                         >
                             { this.state.fileList.length < 1 && '+ 上传图片' }
@@ -130,6 +139,8 @@ class Addto extends Component {
                     </Form.Item>
 
                 </Form>
+
+                { showMask ? <ImgPreView src={ curImgSrc } closeHandle={ () => { this.closeMskHandle() } } /> : '' }
 
             </div>
         )
@@ -257,12 +268,19 @@ class Addto extends Component {
         }
     }
 
-    ObjToStr (obj) {
-        let tempArr = [];
-        Object.entries(obj).map(item => {
-            if (item[0] !== 'id') tempArr.push(item[0] + '=' + item[1]);
+    // 预览图片
+    handlePreview (fileObj) {
+        this.setState({
+            curImgSrc: fileObj.url,
+            showMask: true
         })
-        return tempArr.join('&');
+    }
+
+    // 关闭预览
+    closeMskHandle () {
+        this.setState({
+            showMask: false
+        })
     }
 }
 

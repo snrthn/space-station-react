@@ -65,7 +65,7 @@ module.exports = {
                 exclude: path.resolve(__dirname, 'node_modules')
             },
             {
-                test: /\.sass$/i,
+                test: /\.(scss|sass)$/i,
                 use: [MiniCssExtractPlugin.loader, {
                     loader: path.resolve(__dirname, 'utils/handleUrl'),
                     options: {
@@ -124,6 +124,7 @@ module.exports = {
             'api': path.resolve(__dirname, '../src/api'),
             'store': path.resolve(__dirname, '../src/store'),
             'views': path.resolve(__dirname, '../src/views'),
+            'components': path.resolve(__dirname, '../src/components'),
             'assets': path.resolve(__dirname, '../src/assets'),
             'styles': path.resolve(__dirname, '../src/styles'),
             'utils': path.resolve(__dirname, '../src/utils')
