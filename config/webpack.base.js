@@ -61,7 +61,13 @@ module.exports = {
                         publicPath: config.assetsPublicPath,
                         dirPath: '../../'
                     }
-                }, 'css-loader', 'postcss-loader', 'less-loader'],
+                },
+                {
+                    loader: 'css-loader',
+                    options: {
+                        modules: true
+                    }
+                }, 'postcss-loader', 'less-loader'],
                 exclude: path.resolve(__dirname, 'node_modules')
             },
             {
@@ -72,7 +78,13 @@ module.exports = {
                         publicPath: config.assetsPublicPath,
                         dirPath: '../../'
                     }
-                }, 'css-loader', 'postcss-loader', 'sass-loader'],
+                },
+                {
+                    loader: 'css-loader',
+                    options: {
+                        modules: true
+                    }
+                }, 'postcss-loader', 'sass-loader'],
                 exclude: path.resolve(__dirname, 'node_modules')
             },
             {
