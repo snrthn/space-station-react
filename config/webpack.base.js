@@ -50,7 +50,13 @@ module.exports = {
                         publicPath: config.assetsPublicPath,
                         dirPath: '../../'
                     }
-                }, 'css-loader', 'postcss-loader'],
+                },
+                {
+                    loader: 'css-loader',
+                    options: {
+                        modules: true
+                    }
+                }, 'postcss-loader'],
                 exclude: path.resolve(__dirname, 'node_modules')
             },
             {
