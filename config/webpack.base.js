@@ -61,7 +61,13 @@ module.exports = {
                         publicPath: config.assetsPublicPath,
                         dirPath: '../../'
                     }
-                }, 'css-loader', 'postcss-loader', 'less-loader'],
+                },
+                {
+                    loader: 'css-loader',
+                    options: {
+                        modules: true
+                    }
+                }, 'postcss-loader', 'less-loader'],
                 exclude: path.resolve(__dirname, 'node_modules')
             },
             {
@@ -72,7 +78,13 @@ module.exports = {
                         publicPath: config.assetsPublicPath,
                         dirPath: '../../'
                     }
-                }, 'css-loader', 'postcss-loader', 'sass-loader'],
+                },
+                {
+                    loader: 'css-loader',
+                    options: {
+                        modules: true
+                    }
+                }, 'postcss-loader', 'sass-loader'],
                 exclude: path.resolve(__dirname, 'node_modules')
             },
             {
@@ -122,11 +134,9 @@ module.exports = {
         alias: {
             '@': path.resolve(__dirname, '../src'),
             'api': path.resolve(__dirname, '../src/api'),
-            'components': path.resolve(__dirname, '../src/components'),
-            'common': path.resolve(__dirname, '../src/common'),
-            'router': path.resolve(__dirname, '../src/router'),
             'store': path.resolve(__dirname, '../src/store'),
             'views': path.resolve(__dirname, '../src/views'),
+            'components': path.resolve(__dirname, '../src/components'),
             'assets': path.resolve(__dirname, '../src/assets'),
             'styles': path.resolve(__dirname, '../src/styles'),
             'utils': path.resolve(__dirname, '../src/utils')
