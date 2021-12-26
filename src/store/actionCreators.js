@@ -4,7 +4,8 @@ import {
     UPDATE_INTERVIEW_DATA_SAGA,
     REMOVE_INTERVIEW_DATA_SAGA,
     UPLOAD_FILE_IMAGE_SAGA,
-    DELETE_FILE_IMAGE_SAGA
+    DELETE_FILE_IMAGE_SAGA,
+    UPDATE_TIPS
 } from './actionTypes';
 
 
@@ -56,5 +57,12 @@ export const deleteFileImage = function (options) {
         type: DELETE_FILE_IMAGE_SAGA,
         data: options.data,
         vm: options.vm
+    }
+};
+
+export const getUpdateTipsHandle = function (options) {
+    return {
+        type: UPDATE_TIPS,
+        data: options
     }
 };

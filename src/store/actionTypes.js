@@ -22,3 +22,7 @@ export const UPLOAD_FILE_IMAGE_SAGA = 'uploadFileImageSage';
 // 删除文件
 export const DELETE_FILE_IMAGE = 'deleteFileImage';
 export const DELETE_FILE_IMAGE_SAGA = 'deleteFileImageSage';
+
+// 更新提示
+export const UPDATE_TIPS = 'updateTips';
+export const UPDATE_TIPS_SAGA = 'updateTipsSage';

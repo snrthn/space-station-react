@@ -18,7 +18,9 @@ import {
     UPLOAD_FILE_IMAGE,
     UPLOAD_FILE_IMAGE_SAGA,
     DELETE_FILE_IMAGE,
-    DELETE_FILE_IMAGE_SAGA
+    DELETE_FILE_IMAGE_SAGA,
+    UPDATE_TIPS,
+    UPDATE_TIPS_SAGA
 } from './actionTypes';
 
 import {
@@ -211,6 +213,14 @@ function * deleteFileHandleHandle (action) {
 }
 
 
+// 更新提示
+function * updateTipsContentHandle (action) {
+    yield put({
+        type: UPDATE_TIPS,
+    })
+}
+
+
 function * mySagas () {
     // 获取数据
     yield takeEvery(GET_INTERVIEW_DATA_SAGA, queryInterviewListHandle);
@@ -229,6 +239,9 @@ function * mySagas () {
 
     // 文件删除
     yield takeEvery(DELETE_FILE_IMAGE_SAGA, deleteFileHandleHandle);
+
+    // 更新提示
+    yield takeEvery(UPDATE_TIPS_SAGA, updateTipsContentHandle)
 }
 
 
