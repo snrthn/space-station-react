@@ -6,9 +6,9 @@ import { Form, TextArea, Button, Switch, Space } from 'antd-mobile';
 
 import { getUpdateTipsHandle } from 'store/actionCreators';
 
-import setupLess from 'styles/setup.less';
+import settingStyle from 'styles/setting.less';
 
-class Setup extends Component {
+class Setting extends Component {
 
     constructor (props) {
         super(props);
@@ -21,17 +21,18 @@ class Setup extends Component {
         let { showTips, tipsContent } = this.props;
 
         return (
-            <div className={setupLess['app-setup']}>
+            <div className={settingStyle['app-setting']}>
 
                 <TextArea
                     value={ tipsContent }
+                    className={ settingStyle['text-area'] }
                     placeholder='请输入提示内容'
                     autoSize={{ minRows: 3, maxRows: 5 }}
                     onChange={(val) => { this.changeText(val) }}
                 />
 
                 <Space>
-                    <span className={setupLess['label']}>是否显示：</span><Switch checked={ showTips } onChange={(val) => { this.changeShow(val) }} />
+                    <span className={settingStyle['label']}>是否显示：</span><Switch checked={ showTips } onChange={(val) => { this.changeShow(val) }} />
                 </Space>
                 
             </div>
@@ -66,4 +67,4 @@ function mapDispatchToActions (dispatch) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToActions)(withRouter(Setup));
+export default connect(mapStateToProps, mapDispatchToActions)(withRouter(Setting));

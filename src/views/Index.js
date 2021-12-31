@@ -7,7 +7,7 @@ import Home from './pages/Home';
 import Task from './pages/Task';
 import List from './pages/List';
 import Mine from './pages/Mine';
-import Setup from './pages/Setup';
+import Setting from './pages/Setting';
 
 import { NavBar, TabBar } from 'antd-mobile';
 
@@ -42,7 +42,7 @@ class Index extends Component {
                     title: '个人中心'
                 },
                 {
-                    path: '/setup',
+                    path: '/setting',
                     title: '设置'
                 }
             ],
@@ -148,8 +148,8 @@ class Index extends Component {
                                 <Route exact path='/mine'>
                                     <Mine />
                                 </Route>
-                                <Route exact path='/setup'>
-                                    <Setup />
+                                <Route exact path='/setting'>
+                                    <Setting />
                                 </Route>
                             </Switch>
                         </div>

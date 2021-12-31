@@ -17,7 +17,7 @@ class Mine extends Component {
     }
     
     toSettingPahe = () => {
-        this.props.history.push('/setup');
+        this.props.history.push('/setting');
     }
 
     render () {
