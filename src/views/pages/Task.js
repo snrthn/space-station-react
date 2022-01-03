@@ -2,22 +2,309 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
+import {
+    Form,
+    Input,
+    Button,
+    DatePicker,
+    Picker,
+    Toast
+} from 'antd-mobile';
+
+import { AddOutline } from 'antd-mobile-icons';
+
+import { addExerciseData, updateExerciseData } from 'store/actionCreators';
+
 class Task extends Component {
 
     constructor (props) {
         super(props);
 
-        this.state = {}
+        this.state = {
+            loading: false,
+            showDatePicker: false,
+            showTypePicker: false,
+            showUnitPicker: false,
+            typeColumns: [
+                [
+                    { label: '仰卧起坐', value: '仰卧起坐' },
+                    { label: '做俯卧撑', value: '做俯卧撑' },
+                    { label: '就地起蹲', value: '就地起蹲' },
+                    { label: '动感单车', value: '动感单车' },
+                    { label: '半起仰卧', value: '半起仰卧' },
+                    { label: '原地跑步', value: '原地跑步' },
+                    { label: '靠墙站立', value: '靠墙站立' },
+                    { label: '定量喝水', value: '定量喝水' }
+                ]
+            ],
+            unitColumns: [
+                [
+                    { label: '个数', value: '个' },
+                    { label: '分钟', value: '分' },
+                    { label: '杯数', value: '杯' }
+                ]
+            ],
+            typeList: [
+                {
+                    type: 'type1',
+                    amount: 'amount1',
+                    unit: 'unit1',
+                    showTypePicker: false,
+                    showUnitPicker: false
+                }
+            ],
+            formData: {
+                userName: '',
+                bodyWeight: '',
+                dateTime: ''
+            }
+        }
     }
 
     render () {
+        let { loading, showDatePicker, typeColumns, unitColumns, typeList } = this.state;
+
         return (
             <div className="app-task">
                 
-                计划制定
+                <Form
+                    layout="horizontal"
+                    onFinish={(formData) => { this.submitHandle(formData) }}
+                    footer={
+                        <Button block type="submit" color="primary" loading={ loading } loadingText="正在提交">
+                            提交
+                        </Button>
+                    }
+                >
+
+                    <Form.Item
+                        name="userName"
+                        label="姓名"
+                        rules={[{ required: true, message: '姓名不能为空' }]}
+                    >
+                        <Input placeholder="请输入姓名" />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="bodyWeight"
+                        label="体重"
+                        rules={[{ required: true, message: '体重不能为空' }]}
+                    >
+                            <Input placeholder="请输入体重，单位为Kg" />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="dateTime"
+                        label="日期"
+                        trigger="onConfirm"
+                        onClick={() => { this.setDatePickerHandle(true) }}
+                        rules={[{ required: true, message: '日期不能为空' }]}
+                    >
+                        <DatePicker
+                            visible={ showDatePicker }
+                            onClose={() => { this.setDatePickerHandle(false) }}
+                        >
+                            {
+                                value => value ? <span>{ this.formatTimeHandle(value * 1)  }</span> : <span style={{ color: '#cccccc' }}>请选择日期</span>
+                            }
+                        </DatePicker>
+                    </Form.Item>
+
+                    { typeList.length && typeList.map((item, index) => {
+                            return (
+
+                                <div key={ index }>
+
+                                    <div style={{ display: 'flex', 'justifyContent': 'space-between', padding: '8px 16px 8px', margin: '16px 0px 8px', background: '#f8f8f8' }}>
+                                        <span>订制任务{ index + 1 }</span>
+                                        <Button color='warning' size="mini" disabled={ typeList.length === 1 } onClick={ () => { this.removeCurItem(index) } }>
+                                            删除
+                                        </Button>
+                                    </div>
+
+                                    <Form.Item
+                                        name={ item.type }
+                                        label="类别"
+                                        trigger="onConfirm"
+                                        onClick={() => { this.setItemPickerHandle(true, index) }}
+                                        rules={[{ required: true, message: '类别不能为空' }]}
+                                    >
+                                        <Picker
+                                            visible={ item.showTypePicker }
+                                            columns={ typeColumns }
+                                            onCancel={ () => { this.setItemPickerHandle(false, index) } }
+                                            onConfirm={ () => { this.setItemPickerHandle(false, index) } }
+                                        >
+                                            { items => {
+                                                if (items.every(item => item === null)) {
+                                                    return <span style={{ color: '#cccccc' }}>请选择类别</span>;
+                                                } else {
+                                                    return items.map(item => item.label);
+                                                }
+                                            } }
+                                        </Picker>
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name={ item.amount }
+                                        label="量化"
+                                        rules={[{ required: true, message: '锻炼量不能为空' }]}
+                                    >
+                                        <Input placeholder='请输入锻炼量' />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name={ item.unit }
+                                        label="单位"
+                                        trigger="onConfirm"
+                                        onClick={() => { this.setUnitPickerHandle(true, index) }}
+                                        rules={[{ required: true, message: '单位不能为空' }]}
+                                    >
+                                        <Picker
+                                            visible={ item.showUnitPicker }
+                                            columns={ unitColumns }
+                                            onCancel={ () => { this.setUnitPickerHandle(false, index) } }
+                                            onConfirm={ () => { this.setUnitPickerHandle(false, index) } }
+                                        >
+                                            { items => {
+                                                if (items.every(item => item === null)) {
+                                                    return <span style={{ color: '#cccccc' }}>请选择类别</span>;
+                                                } else {
+                                                    return items.map(item => item.label);
+                                                }
+                                            } }
+                                        </Picker>
+                                    </Form.Item>
+
+                                </div>
+
+                            )
+                        })
+                    }
+
+                    <Button style={{ margin: '16px', width: 'calc(100% - 32px)' }} block color='primary' fill='outline' onClick={ () => { this.addTaskHandle() } }>
+                        <AddOutline style={{ marginRight: '8px' }} />
+                        任务追加
+                    </Button>
+
+                </Form>
                 
             </div>
         )
+    }
+
+    formatTimeHandle (n) {
+        let d = new Date(n);
+        let h = new Date();
+        let year = String(d.getFullYear());
+        let month = String(d.getMonth() + 1).padStart(2, '0');
+        let date = String(d.getDate()).padStart(2, '0');
+        let hour = String(h.getHours()).padStart(2, '0');
+        let minute = String(h.getMinutes()).padStart(2, '0');
+        let second = String(h.getSeconds()).padStart(2, '0');
+        return year + '-' + month + '-' + date + '' + ' ' + hour + ':' + minute + ':' + second;
+    }
+
+    setDatePickerHandle (tag) {
+        this.setState({
+            showDatePicker: tag
+        })
+    }
+
+    setItemPickerHandle (tag, index) {
+        let { typeList } = this.state;
+        typeList[index]['showTypePicker'] = tag;
+
+        this.setState({
+            typeList
+        })
+    }
+
+    setUnitPickerHandle (tag, index) {
+        let { typeList } = this.state;
+        typeList[index]['showUnitPicker'] = tag;
+
+        this.setState({
+            typeList
+        })
+    }
+
+    addTaskHandle () {
+        let { typeList } = this.state;
+        let len = typeList.length + 1;
+        typeList.push({
+            type: 'type' + len,
+            amount: 'amount' + len,
+            unit: 'unit' + len
+        })
+
+        this.setState({
+            typeList
+        })
+    }
+
+    removeCurItem (index) {        
+        let typeList = this.state.typeList;
+        
+        if (typeList.length === 1) {
+            Toast.show({
+                icon: 'fail',
+                content: '不能删完',
+            });
+            return;
+        }
+
+        typeList.splice(index, 1);
+
+        let len = typeList.length;
+        typeList = new Array(len).fill(null).map((item, index) => {
+            return {
+                type: 'type' + (index + 1),
+                amount: 'amount' + (index + 1),
+                unit: 'unit' + (index + 1)
+            }
+        });
+
+        this.setState({
+            typeList
+        })
+
+    }
+
+    submitHandle (formData) {
+
+        this.setState({
+            loading: true
+        })
+
+        let tempFormData = JSON.parse(JSON.stringify(formData));
+        let { typeList } = this.state;
+
+        tempFormData.dateTime = this.formatTimeHandle(new Date(tempFormData.dateTime) * 1);
+
+        tempFormData.typeList = typeList.map((item, index) => {
+
+            let typeKey = 'type' + (index + 1);
+            let amountKey = 'amount' + (index + 1);
+            let unitKey = 'unit' + (index + 1);
+
+            let type = tempFormData['type' + (index + 1)][0];
+            let amount = tempFormData['amount' + (index + 1)];
+            let unit = tempFormData['unit' + (index + 1)][0];
+
+            Reflect.deleteProperty(tempFormData, typeKey);
+            Reflect.deleteProperty(tempFormData, amountKey);
+            Reflect.deleteProperty(tempFormData, unitKey);
+
+            return { type, amount, unit, status: 0 };
+        })
+
+        tempFormData.typeList = JSON.stringify(tempFormData.typeList);
+
+        this.props.saveFormData({
+            data: tempFormData,
+            vm: this
+        })
     }
 }
 
@@ -25,8 +312,15 @@ function mapStateToProps (state) {
     return {};
 }
 
-function mapDispatchToActions () {
-    return {};
+function mapDispatchToActions (dispatch) {
+    return {
+        saveFormData (options) {
+            dispatch(addExerciseData(options));
+        },
+        updateFormdata (options) {            
+            dispatch(updateExerciseData(options));
+        }
+    };
 }
 
 export default connect(mapStateToProps, mapDispatchToActions)(withRouter(Task));

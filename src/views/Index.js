@@ -9,6 +9,8 @@ import List from './pages/List';
 import Mine from './pages/Mine';
 import Setting from './pages/Setting';
 
+import { getTipsContentHandle } from 'store/actionCreators';
+
 import { NavBar, TabBar } from 'antd-mobile';
 
 import { Route, Switch, HashRouter as Router } from 'react-router-dom';
@@ -17,11 +19,12 @@ import { AppOutline, EditSOutline, UnorderedListOutline, UserOutline } from 'ant
 
 import styles from 'styles/index.less';
 
-
 class Index extends Component {
 
     constructor (props) {
         super(props);
+
+        this.props.queryTips();
 
         this.state = {
             router: [
@@ -172,8 +175,12 @@ function mapStateToProps (state) {
     return {};
 }
 
-function mapDispatchToActions () {
-    return {};
+function mapDispatchToActions (dispatch) {
+    return {
+        queryTips () {
+            dispatch(getTipsContentHandle());
+        }
+    };
 }
 
 export default connect(mapStateToProps, mapDispatchToActions)(Index);

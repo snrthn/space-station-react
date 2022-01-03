@@ -1,19 +1,19 @@
 
 // 获取数据
-export const GET_INTERVIEW_DATA = 'getInterviewData';
-export const GET_INTERVIEW_DATA_SAGA = 'getInterviewDataSaga';
+export const GET_EXERCISE_DATA = 'getExerciseData';
+export const GET_EXERCISE_DATA_SAGA = 'getExerciseDataSaga';
 
 // 新增数据
-export const ADD_INTERVIEW_DATA = 'addInterviewData';
-export const ADD_INTERVIEW_DATA_SAGA = 'addInterviewDataSaga';
+export const ADD_EXERCISE_DATA = 'addExerciseData';
+export const ADD_EXERCISE_DATA_SAGA = 'addExerciseDataSaga';
 
 // 更新数据
-export const UPDATE_INTERVIEW_DATA = 'updateInterviewData';
-export const UPDATE_INTERVIEW_DATA_SAGA = 'updateInterviewDataSaga';
+export const UPDATE_EXERCISE_DATA = 'updateExerciseData';
+export const UPDATE_EXERCISE_DATA_SAGA = 'updateExerciseDataSaga';
 
 // 删除数据
-export const REMOVE_INTERVIEW_DATA = 'removeInterviewData';
-export const REMOVE_INTERVIEW_DATA_SAGA = 'removeInterviewDataSaga';
+export const REMOVE_EXERCISE_DATA = 'removeExerciseData';
+export const REMOVE_EXERCISE_DATA_SAGA = 'removeExerciseDataSaga';
 
 // 文件上传
 export const UPLOAD_FILE_IMAGE = 'uploadFileImage';
@@ -22,6 +22,10 @@ export const UPLOAD_FILE_IMAGE_SAGA = 'uploadFileImageSage';
 // 删除文件
 export const DELETE_FILE_IMAGE = 'deleteFileImage';
 export const DELETE_FILE_IMAGE_SAGA = 'deleteFileImageSage';
+
+// 读取提示
+export const GET_TIPS_CONTENT = 'getTipsContent';
+export const GET_TIPS_CONTENT_SAGA = 'getTipsContentSaga';
 
 // 更新提示
 export const UPDATE_TIPS = 'updateTips';

@@ -1,0 +1,51 @@
+.mask-dialog {
+    width: 80%;
+    // min-height: 300px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-sizing: border-box;
+    padding: 16px;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    .title {
+        font-weight: bold;
+        text-align: center;
+        font-size: 16px;
+        position: relative;
+
+        .close-icon {
+            position: absolute;
+            right: 0px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    }
+
+    .type-list {
+        margin-top: 20px;
+        line-height: 30px;
+
+        .type-item {
+            margin: 8px 0px;
+            display: flex;
+            justify-content: space-between;
+
+            .item-icon {
+                margin-right: 8px;
+                position: relative;
+                top: 2px;
+            }
+
+            .cups-list {
+                margin-left: 6px;
+                vertical-align: -3px;
+            }
+
+        }
+
+    }
+}

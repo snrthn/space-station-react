@@ -4,21 +4,37 @@ import { withRouter } from 'react-router';
 
 import { Form, TextArea, Button, Switch, Space } from 'antd-mobile';
 
-import { getUpdateTipsHandle } from 'store/actionCreators';
+import { getTipsContentHandle, updateTipsHandle } from 'store/actionCreators';
 
 import settingStyle from 'styles/setting.less';
+
+import store from 'store';
 
 class Setting extends Component {
 
     constructor (props) {
         super(props);
 
-        this.state = {}
+        this.state = {
+            tipsContent: this.props.tipsContent,
+            showTips: this.props.showTips,
+            loading: false
+        }
+
+        // 监听store数据变化
+        store.subscribe(() => {
+            if (this.state.loading) return;
+            setTimeout(() => {
+                this.setState({
+                    tipsContent: this.props.tipsContent,
+                    showTips: this.props.showTips
+                })
+            }, 0);
+        });
     }
 
     render () {
-        let { loading } = this.state;
-        let { showTips, tipsContent } = this.props;
+        let { showTips, tipsContent, loading } = this.state;
 
         return (
             <div className={settingStyle['app-setting']}>
@@ -28,27 +44,40 @@ class Setting extends Component {
                     className={ settingStyle['text-area'] }
                     placeholder='请输入提示内容'
                     autoSize={{ minRows: 3, maxRows: 5 }}
-                    onChange={(val) => { this.changeText(val) }}
+                    onChange={(val) => { this.changeFormHandle('tipsContent', val) }}
                 />
 
                 <Space>
-                    <span className={settingStyle['label']}>是否显示：</span><Switch checked={ showTips } onChange={(val) => { this.changeShow(val) }} />
+                    <span className={settingStyle['label']}>是否显示：</span><Switch checked={ showTips } onChange={(val) => { this.changeFormHandle('showTips', val) }} />
                 </Space>
+
+
+                <Button style={{ margin: '16px 0px' }} color='primary' block loading={loading} loadingText="更新中" onClick={()=>{ this.submitData() }}>
+                    保存
+                </Button>
                 
             </div>
         )
     }
 
-    changeText = (val) => {
-        this.props.updateTips({
-            tipsContent: val
-        });
+    changeFormHandle = (key, val) => {
+        this.setState({ [key]: val });
     }
 
-    changeShow = (val) => {
-        this.props.updateTips({
-            showTips: val
-        });
+    submitData = () => {
+        this.setState({
+            loading: true
+        }, () => {
+            this.props.updateTips({
+                vm: this,
+                message: this.state.tipsContent,
+                show: this.state.showTips ? 1 : 0
+            })
+        })
+    }
+
+    componentWillUnmount () {
+        this.setState = () => false;
     }
 }
 
@@ -61,8 +90,11 @@ function mapStateToProps (state) {
 
 function mapDispatchToActions (dispatch) {
     return {
+        queryTips () {
+            dispatch(getTipsContentHandle());
+        },
         updateTips (options) {
-            dispatch(getUpdateTipsHandle(options))
+            dispatch(updateTipsHandle(options));
         }
     };
 }

@@ -9,7 +9,10 @@ class Home extends Component {
     constructor (props) {
         super(props);
 
-        this.state = {}
+        this.state = {
+            tipsContent: this.props.tipsContent,
+            showTips: this.props.showTips
+        }
     }
 
     render () {
@@ -43,6 +46,10 @@ class Home extends Component {
             </div>
         )
     }
+
+    componentWillUnmount () {
+        this.setState = () => false;
+    }
 }
 
 function mapStateToProps (state) {
@@ -52,7 +59,7 @@ function mapStateToProps (state) {
     };
 }
 
-function mapDispatchToActions () {
+function mapDispatchToActions (dispatch) {
     return {};
 }
 

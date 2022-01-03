@@ -6,55 +6,55 @@
 
 import { put, takeEvery } from 'redux-saga/effects';
 
+import { Toast } from 'antd-mobile';
+
 import { 
-    GET_INTERVIEW_DATA,
-    GET_INTERVIEW_DATA_SAGA,
-    ADD_INTERVIEW_DATA,
-    ADD_INTERVIEW_DATA_SAGA,
-    UPDATE_INTERVIEW_DATA,
-    UPDATE_INTERVIEW_DATA_SAGA,
-    REMOVE_INTERVIEW_DATA,
-    REMOVE_INTERVIEW_DATA_SAGA,
+    GET_EXERCISE_DATA,
+    GET_EXERCISE_DATA_SAGA,
+    ADD_EXERCISE_DATA,
+    ADD_EXERCISE_DATA_SAGA,
+    UPDATE_EXERCISE_DATA,
+    UPDATE_EXERCISE_DATA_SAGA,
+    REMOVE_EXERCISE_DATA,
+    REMOVE_EXERCISE_DATA_SAGA,
     UPLOAD_FILE_IMAGE,
     UPLOAD_FILE_IMAGE_SAGA,
     DELETE_FILE_IMAGE,
     DELETE_FILE_IMAGE_SAGA,
+    GET_TIPS_CONTENT,
+    GET_TIPS_CONTENT_SAGA,
     UPDATE_TIPS,
     UPDATE_TIPS_SAGA
 } from './actionTypes';
 
 import {
-    queryInterviewList,
-    addInterviewInfo,
-    updateInterviewInfo,
-    deleteInterviewInfo,
+    queryExerciseList,
+    addExerciseInfo,
+    updateExerciseInfo,
+    deleteExerciseInfo,
     uploadFileHandle,
-    deleteFileHandle
-} from 'api/interview';
+    deleteFileHandle,
+    queryTipsContentHandle,
+    updateTipsContentHandle
+} from 'api/exercise';
 
 
 // 获取数据
-function * queryInterviewListHandle (action) {
+function * queryExerciseListHandle (action) {
     let { id, params, vm } = action;
     let retData = null;
 
-    yield queryInterviewList({ params }).then(result => {
+    yield queryExerciseList({ params }).then(result => {
         // 结果赋值
         retData = result;
+
+        Toast.clear();
         
         // 更新数据
         if (id) {
 
             // 在Form表单中运行
-            let formData = retData.interview[0];
-            let fileList = vm.state.fileList;
-
-            fileList.push({
-                uid: -1,
-                name: formData.interview_img.substr(formData.interview_img.lastIndexOf('/') + 1),
-                thumbUrl: formData.interview_img,
-                url: formData.interview_img
-            })
+            let formData = retData.ex_recoder[0];
 
             vm.setState({
                 formData
@@ -63,13 +63,6 @@ function * queryInterviewListHandle (action) {
             // 把详情更新到页面
             vm.formRef.current.setFieldsValue(formData);
 
-        } else {
-    
-            // 结果赋值
-            vm.setState({
-                loading: false,
-                total: retData._results
-            })
         }
 
     })
@@ -77,18 +70,19 @@ function * queryInterviewListHandle (action) {
     yield put({
         vm: action.vm,
         id: action.id,
-        type: GET_INTERVIEW_DATA,
+        type: GET_EXERCISE_DATA,
+        isFirst: action.isFirst,
         data: retData
     })
 }
 
 
 // 新增数据
-function * addInterviewInfoHandle (action) {
+function * addExerciseInfoHandle (action) {
     let { data, vm } = action;
     let retData = null;
 
-    yield addInterviewInfo({ data }).then(result => {
+    yield addExerciseInfo({ data }).then(result => {
         // 结果赋值
         retData = result;
         
@@ -98,66 +92,65 @@ function * addInterviewInfoHandle (action) {
         }, () => {
             
             // 跳转页面
-            vm.props.history.push('/datalist');
+            vm.props.history.push('/list');
             
         })
     })
     
     yield put({
         vm: action.vm,
-        type: ADD_INTERVIEW_DATA,
+        type: ADD_EXERCISE_DATA,
         data: retData
     })
 }
 
 
 // 更新数据
-function * updateInterviewInfoHandle (action) {
-    let { id, data, vm } = action;
+function * updateExerciseInfoHandle (action) {
+    let { id, data, task, vm } = action;
     let retData = null;
 
-    yield updateInterviewInfo({ id, data }).then(result => {
-        // 结果赋值
-        retData = result;
-        
-        // 更新数据
-        vm.setState({
-            loading: false
-        }, () => {
-            
-            // 跳转页面
-            vm.props.history.push('/datalist');
+    yield updateExerciseInfo({ id, data }).then(result => {
 
-        })
+        Toast.clear();
+
+        if (action.task) {
+            Toast.show({
+                icon: 'success',
+                content: '更新成功！'
+            })
+        }
 
     })
     
     yield put({
-        vm: action.vm,
-        type: UPDATE_INTERVIEW_DATA,
-        data: retData
+        vm,
+        type: UPDATE_EXERCISE_DATA,
+        id,
+        task,
+        data
     })
 }
 
 
 // 删除数据
-function * deleteInterviewInfoHandle (action) {
+function * deleteExerciseInfoHandle (action) {
     let { id } = action;
     let retData = null;
 
-    yield deleteInterviewInfo({ id }).then(result => {
+    yield deleteExerciseInfo({ id }).then(result => {
         // 结果赋值
         retData = result;
 
         // 更新数据
         let vm = action.vm;
-        vm.props.fetchInterviewDataList(vm);
+        vm.props.fetchExerciseDataList(vm);
 
     })
     
     yield put({
         vm: action.vm,
-        type: REMOVE_INTERVIEW_DATA,
+        type: REMOVE_EXERCISE_DATA,
         data: retData
     })
 }
@@ -179,7 +172,7 @@ function * uploadFileHandleHandle (action) {
         fileList[0].status = 'success';
         fileList[0].name = url.substr(url.lastIndexOf('/') + 1);
 
-        vm.state.formData.interview_img = url;
+        vm.state.formData.exercise_img = url;
 
         vm.setState({
             formData: vm.state.formData,
@@ -213,26 +206,59 @@ function * deleteFileHandleHandle (action) {
 }
 
 
+// 读取提示
+function * getTipsContentHandle (action) {
+    let retData = null;
+
+    yield queryTipsContentHandle().then(result => {
+        // 结果赋值
+        retData = result;
+    })
+
+    yield put({
+        type: GET_TIPS_CONTENT,
+        data: retData.exmsg[1]
+    })
+}
+
+
 // 更新提示
-function * updateTipsContentHandle (action) {
+function * editTipsContentHandle (action) {
+    let { data, vm } = action;
+
+    yield updateTipsContentHandle({ data }).then(result => {
+
+        // 更新状态
+        vm.setState({
+            loading: false
+        })
+
+        Toast.show({
+            icon: 'success',
+            content: '更新成功！'
+        })
+
+    })
+
     yield put({
         type: UPDATE_TIPS,
+        data
     })
 }
 
 
 function * mySagas () {
     // 获取数据
-    yield takeEvery(GET_INTERVIEW_DATA_SAGA, queryInterviewListHandle);
+    yield takeEvery(GET_EXERCISE_DATA_SAGA, queryExerciseListHandle);
 
     // 新增数据
-    yield takeEvery(ADD_INTERVIEW_DATA_SAGA, addInterviewInfoHandle);
+    yield takeEvery(ADD_EXERCISE_DATA_SAGA, addExerciseInfoHandle);
 
     // 更新数据
-    yield takeEvery(UPDATE_INTERVIEW_DATA_SAGA, updateInterviewInfoHandle);
+    yield takeEvery(UPDATE_EXERCISE_DATA_SAGA, updateExerciseInfoHandle);
 
     // 删除数据
-    yield takeEvery(REMOVE_INTERVIEW_DATA_SAGA, deleteInterviewInfoHandle);
+    yield takeEvery(REMOVE_EXERCISE_DATA_SAGA, deleteExerciseInfoHandle);
 
     // 上传文件
     yield takeEvery(UPLOAD_FILE_IMAGE_SAGA, uploadFileHandleHandle);
@@ -240,8 +266,11 @@ function * mySagas () {
     // 文件删除
     yield takeEvery(DELETE_FILE_IMAGE_SAGA, deleteFileHandleHandle);
 
+    // 读取提示
+    yield takeEvery(GET_TIPS_CONTENT_SAGA, getTipsContentHandle);
+
     // 更新提示
-    yield takeEvery(UPDATE_TIPS_SAGA, updateTipsContentHandle)
+    yield takeEvery(UPDATE_TIPS_SAGA, editTipsContentHandle);
 }
 
 

@@ -1,43 +1,46 @@
 import { 
-    GET_INTERVIEW_DATA_SAGA,
-    ADD_INTERVIEW_DATA_SAGA,
-    UPDATE_INTERVIEW_DATA_SAGA,
-    REMOVE_INTERVIEW_DATA_SAGA,
+    GET_EXERCISE_DATA_SAGA,
+    ADD_EXERCISE_DATA_SAGA,
+    UPDATE_EXERCISE_DATA_SAGA,
+    REMOVE_EXERCISE_DATA_SAGA,
     UPLOAD_FILE_IMAGE_SAGA,
     DELETE_FILE_IMAGE_SAGA,
-    UPDATE_TIPS
+    GET_TIPS_CONTENT_SAGA,
+    UPDATE_TIPS_SAGA
 } from './actionTypes';
 
 
-export const getInterviewData = function (options) {
+export const getExerciseData = function (options) {
     return {
-        type: GET_INTERVIEW_DATA_SAGA,
+        type: GET_EXERCISE_DATA_SAGA,
         params: options.params,
+        isFirst: options.isFirst,
         id: options.id,
         vm: options.vm
     }
 };
 
-export const addInterviewData = function (options) {
+export const addExerciseData = function (options) {
     return {
-        type: ADD_INTERVIEW_DATA_SAGA,
+        type: ADD_EXERCISE_DATA_SAGA,
         data: options.data,
         vm: options.vm
     }
 };
 
-export const updateInterviewData = function (options) {
+export const updateExerciseData = function (options) {
     return {
-        type: UPDATE_INTERVIEW_DATA_SAGA,
+        type: UPDATE_EXERCISE_DATA_SAGA,
         data: options.data,
         id: options.id,
+        task: options.task,
         vm: options.vm
     }
 };
 
-export const removeInterviewData = function (options) {
+export const removeExerciseData = function (options) {
     return {
-        type: REMOVE_INTERVIEW_DATA_SAGA,
+        type: REMOVE_EXERCISE_DATA_SAGA,
         id: options.id,
         vm: options.vm
     }
@@ -60,9 +63,20 @@ export const deleteFileImage = function (options) {
     }
 };
 
-export const getUpdateTipsHandle = function (options) {
+export const getTipsContentHandle = function (options) {
     return {
-        type: UPDATE_TIPS,
+        type: GET_TIPS_CONTENT_SAGA,
         data: options
+    }
+};
+
+export const updateTipsHandle = function (options) {
+    return {
+        type: UPDATE_TIPS_SAGA,
+        data: {            
+            message: options.message,
+            show: options.show
+        },
+        vm: options.vm
     }
 };
