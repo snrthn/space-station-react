@@ -86,15 +86,8 @@ function * addExerciseInfoHandle (action) {
         // 结果赋值
         retData = result;
         
-        // 更新数据
-        vm.setState({
-            loading: false
-        }, () => {
-            
-            // 跳转页面
-            vm.props.history.push('/list');
-            
-        })
+        // 跳转页面
+        vm.props.history.push('/list');
     })
     
     yield put({
@@ -119,16 +112,9 @@ function * updateExerciseInfoHandle (action) {
                 icon: 'success',
                 content: '更新成功！'
             })
-        } else {
-            // 更新数据
-            vm.setState({
-                loading: false
-            }, () => {
-                
-                // 跳转页面
-                vm.props.history.push('/list');
-
-            })
+        } else {            
+            // 跳转页面
+            vm.props.history.push('/list');
         }
 
     })
