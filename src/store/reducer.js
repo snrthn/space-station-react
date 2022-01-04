@@ -64,6 +64,19 @@ export default function (state = defaultStatus, action) {
         return newState;
     } else if (action.type === REMOVE_EXERCISE_DATA) {
         let newState = JSON.parse(JSON.stringify(state));
+        let curIndex = null;
+
+        newState.exerciseList.map((item, index) => {
+            console.log(item.id, action.id);
+            if (item.id === action.id) {
+                curIndex = index;
+            }
+        })
+
+        if (curIndex !== null) {
+            newState.exerciseList.splice(curIndex, 1);
+        }
+
         return newState;
     } else if (action.type === UPLOAD_FILE_IMAGE) {
         let newState = JSON.parse(JSON.stringify(state));

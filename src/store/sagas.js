@@ -119,6 +119,16 @@ function * updateExerciseInfoHandle (action) {
                 icon: 'success',
                 content: '更新成功！'
             })
+        } else {
+            // 更新数据
+            vm.setState({
+                loading: false
+            }, () => {
+                
+                // 跳转页面
+                vm.props.history.push('/list');
+
+            })
         }
 
     })
@@ -136,22 +146,22 @@ function * updateExerciseInfoHandle (action) {
 // 删除数据
 function * deleteExerciseInfoHandle (action) {
     let { id } = action;
-    let retData = null;
 
     yield deleteExerciseInfo({ id }).then(result => {
-        // 结果赋值
-        retData = result;
 
-        // 更新数据
-        let vm = action.vm;
-        vm.props.fetchExerciseDataList(vm);
+        Toast.clear();
+
+        Toast.show({
+            icon: 'success',
+            content: '删除成功！'
+        })
 
     })
     
     yield put({
+        id,
         vm: action.vm,
-        type: REMOVE_EXERCISE_DATA,
-        data: retData
+        type: REMOVE_EXERCISE_DATA
     })
 }
 

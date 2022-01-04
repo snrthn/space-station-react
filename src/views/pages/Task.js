@@ -20,7 +20,10 @@ class Task extends Component {
     constructor (props) {
         super(props);
 
+        this.formRef = React.createRef();
+
         this.state = {
+            curId: null,
             loading: false,
             showDatePicker: false,
             showTypePicker: false,
@@ -52,27 +55,75 @@ class Task extends Component {
                     showTypePicker: false,
                     showUnitPicker: false
                 }
-            ],
-            formData: {
-                userName: '',
-                bodyWeight: '',
-                dateTime: ''
-            }
+            ]
         }
     }
 
+    initFormData () {
+        let formData = this.props.location.state;
+        if (formData) {
+            // 处理typeList
+            let tempTypeList = JSON.parse(formData.typeList);
+
+            let pageForm = {};
+
+            let typeList = tempTypeList.map((item, index) => {
+
+                pageForm['type' + (index + 1)] = [item['type'] === '抑卧起坐' ? '仰卧起坐' : item['type']];
+                pageForm['amount' + (index + 1)] = item['amount'];
+                pageForm['unit' + (index + 1)] = [item['unit']];
+
+                return {
+                    type: 'type' + (index + 1),
+                    amount: 'amount' + (index + 1),
+                    unit: 'unit' + (index + 1),
+                    showTypePicker: false,
+                    showUnitPicker: false
+                }
+            });
+
+            for (let key in formData) {
+                if (key !== 'typeList') {
+                    pageForm[key] = formData[key];
+                }
+            }
+
+            if (!formData.id) {
+                pageForm.userName = '';
+                pageForm.bodyWeight = '';
+            } else {
+                this.setState({
+                    curId: formData.id
+                })
+            }
+
+            this.setState({
+                typeList
+            }, () => {
+                pageForm.dateTime = new Date(pageForm.dateTime);
+                console.log(pageForm);
+                this.formRef.current.setFieldsValue(pageForm);
+            })
+        }
+    }
+
+    componentDidMount () {
+        this.initFormData();
+    }
+
     render () {
-        let { loading, showDatePicker, typeColumns, unitColumns, typeList } = this.state;
+        let { curId, loading, showDatePicker, typeColumns, unitColumns, typeList } = this.state;
 
         return (
             <div className="app-task">
                 
                 <Form
                     layout="horizontal"
+                    ref={ this.formRef }
                     onFinish={(formData) => { this.submitHandle(formData) }}
                     footer={
                         <Button block type="submit" color="primary" loading={ loading } loadingText="正在提交">
-                            提交
+                            { curId ? '立即更新' : '提交计划' }
                         </Button>
                     }
                 >
@@ -90,7 +141,7 @@ class Task extends Component {
                         label="体重"
                         rules={[{ required: true, message: '体重不能为空' }]}
                     >
-                            <Input placeholder="请输入体重，单位为Kg" />
+                        <Input placeholder="请输入体重，单位为Kg" />
                     </Form.Item>
 
                     <Form.Item
@@ -301,10 +352,18 @@ class Task extends Component {
 
         tempFormData.typeList = JSON.stringify(tempFormData.typeList);
 
-        this.props.saveFormData({
-            data: tempFormData,
-            vm: this
-        })
+        if (this.state.curId) {
+            this.props.updateFormdata({
+                id: this.state.curId,
+                data: tempFormData,
+                vm: this
+            })
+        } else {
+            this.props.saveFormData({
+                data: tempFormData,
+                vm: this
+            })
+        }
     }
 }
 
