@@ -114,7 +114,8 @@ class Index extends Component {
 
         addEvent(window, 'hashchange', () => {
             let { mainBody } = this.state;
-            let path = window.location.hash.split('#')[1];
+            let hashPath = window.location.hash.split('#')[1];
+            let path = hashPath === '/' ? '/home' : hashPath;
             let curTitle = '';
             this.state.router.map(item => {
                 if (item.path === path) {

@@ -244,7 +244,7 @@ class Task extends Component {
     }
 
     formatTimeHandle (n) {
-        let formData = this.props.location.state;
+        let formData = this.props.location.state || {};
         let d = formData.id ? new Date(n) : new Date();
         let h = formData.id ? new Date(formData.dateTime) : new Date();
         let year = String(d.getFullYear());
