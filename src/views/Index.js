@@ -72,7 +72,8 @@ class Index extends Component {
                 }
             ],
             activeTitle: '',
-            activeKey: window.location.hash.split('#')[1]
+            activeKey: window.location.hash.split('#')[1],
+            mainBody: null
         }
     }
 
@@ -106,7 +107,13 @@ class Index extends Component {
     }
 
     watchHashRouterChange () {
+
+        this.setState({
+            mainBody: document.getElementById('mainContent')
+        })
+
         addEvent(window, 'hashchange', () => {
+            let { mainBody } = this.state;
             let path = window.location.hash.split('#')[1];
             let curTitle = '';
             this.state.router.map(item => {
@@ -114,6 +121,9 @@ class Index extends Component {
                     curTitle = item.title;
                 }
             })
+
+            // 跳转路由，滚动条置顶
+            if (mainBody.scrollTop) mainBody.scrollTop = 0;
 
             this.setState({
                 activeKey: path,
@@ -134,7 +144,7 @@ class Index extends Component {
                         <div className={styles.top}>
                             <NavBar onBack={()=>{this.goBackHandle()}}>{activeTitle || '页面不存在'}</NavBar>
                         </div>
-                        <div className={styles.body}>
+                        <div className={styles.body} id="mainContent">
                             <Switch>
                                 <Route exact path='/'>
                                     <Home />

@@ -25,17 +25,17 @@ class Home extends Component {
                 { showTips && <NoticeBar content={tipsContent} color='alert' /> }
                 
                 <Swiper autoplay>
-                    <Swiper.Item key="1">
-                        <Image src={require('assets/images/banner-01.jpg')} fit='fill' />
+                    <Swiper.Item key="1" style={{ textAlign: 'center', background: '#f8f8f8' }}>
+                        <Image src={require('assets/images/banner-01.jpg')} fit='scale-down' />
                     </Swiper.Item>
-                    <Swiper.Item key="2">
-                        <Image src={require('assets/images/banner-02.jpg')} fit='fill' />
+                    <Swiper.Item key="2" style={{ textAlign: 'center', background: '#f8f8f8' }}>
+                        <Image src={require('assets/images/banner-02.jpg')} fit='scale-down' />
                     </Swiper.Item>
-                    <Swiper.Item key="3">
-                        <Image src={require('assets/images/banner-03.jpg')} fit='fill' />
+                    <Swiper.Item key="3" style={{ textAlign: 'center', background: '#f8f8f8' }}>
+                        <Image src={require('assets/images/banner-03.jpg')} fit='scale-down' />
                     </Swiper.Item>
-                    <Swiper.Item key="4">
-                        <Image src={require('assets/images/banner-04.jpg')} fit='fill' />
+                    <Swiper.Item key="4" style={{ textAlign: 'center', background: '#f8f8f8' }}>
+                        <Image src={require('assets/images/banner-04.jpg')} fit='scale-down' />
                     </Swiper.Item>
                 </Swiper>
 
