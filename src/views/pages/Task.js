@@ -64,9 +64,6 @@ class Task extends Component {
     initFormData () {
         let formData = this.props.location.state;
         if (formData) {
-            // 格式化时间
-            this.formatTimeHandle(new Date(formData.dateTime) * 1);
-
             // 处理typeList
             let tempTypeList = JSON.parse(formData.typeList);
 
@@ -107,6 +104,9 @@ class Task extends Component {
             }, () => {
                 pageForm.dateTime = new Date(pageForm.dateTime);
                 this.formRef.current.setFieldsValue(pageForm);
+                
+                // 格式化时间
+                if (formData.dateTime) this.formatTimeHandle(new Date(formData.dateTime) * 1);
             })
         }
     }
@@ -248,7 +248,7 @@ class Task extends Component {
         )
     }
 
-    formatTimeHandle (n) {
+    formatTimeHandle (n, submit) {
         let type = this.props.location.type;
         let formData = this.props.location.state;
         let d = new Date(n);
@@ -262,10 +262,6 @@ class Task extends Component {
                 d = new Date(n);
                 h = new Date(formData.dateTime);
             }
-
-            this.setState({
-                init: false
-            })
         }
 
         let year = String(d.getFullYear());
@@ -276,9 +272,24 @@ class Task extends Component {
         let second = String(h.getSeconds()).padStart(2, '0');
         let currShowDateTime = year + '-' + month + '-' + date + '' + ' ' + hour + ':' + minute + ':' + second;
 
+        // 更新时间到组件FormData
+        if (this.state.init) {
+            if (type === 'copy') {
+                this.formRef.current.setFieldsValue({ dateTime: new Date(currShowDateTime) });
+            } else if (type === 'edit') {
+                // this.formRef.current.setFieldsValue({ dateTime: new Date(currShowDateTime) });
+            }
+
+            this.setState({
+                init: false
+            })
+        }
+
         this.setState({
             currShowDateTime
         })
+
+        return submit ? currShowDateTime : new Date(currShowDateTime);
     }
 
     setDatePickerHandle (tag) {
@@ -287,7 +298,8 @@ class Task extends Component {
         })
 
         if (!tag) {
-            this.formatTimeHandle(new Date(this.formRef.current.getFieldValue('dateTime')) * 1);
+            let curVal = this.formRef.current.getFieldValue('dateTime');
+            if (curVal) this.formatTimeHandle(new Date(this.formRef.current.getFieldValue('dateTime')) * 1);
         }
     }
 
@@ -351,45 +363,46 @@ class Task extends Component {
 
     }
 
-    submitHandle (formData) {
+    submitHandle () {
 
-        this.setState({
-            loading: true
-        })
+        let formData = JSON.parse(JSON.stringify(this.formRef.current.getFieldValue()));
+        
+        formData.dateTime = this.formatTimeHandle(new Date(formData.dateTime) * 1, true);
 
-        let tempFormData = JSON.parse(JSON.stringify(formData));
         let { typeList } = this.state;
 
-        tempFormData.dateTime = this.formatTimeHandle(new Date(tempFormData.dateTime) * 1);
-
-        tempFormData.typeList = typeList.map((item, index) => {
+        formData.typeList = typeList.map((item, index) => {
 
             let typeKey = 'type' + (index + 1);
             let amountKey = 'amount' + (index + 1);
             let unitKey = 'unit' + (index + 1);
 
-            let type = tempFormData['type' + (index + 1)][0];
-            let amount = tempFormData['amount' + (index + 1)];
-            let unit = tempFormData['unit' + (index + 1)][0];
+            let type = formData['type' + (index + 1)][0];
+            let amount = formData['amount' + (index + 1)];
+            let unit = formData['unit' + (index + 1)][0];
 
-            Reflect.deleteProperty(tempFormData, typeKey);
-            Reflect.deleteProperty(tempFormData, amountKey);
-            Reflect.deleteProperty(tempFormData, unitKey);
+            Reflect.deleteProperty(formData, typeKey);
+            Reflect.deleteProperty(formData, amountKey);
+            Reflect.deleteProperty(formData, unitKey);
 
             return { type, amount, unit, status: 0 };
         })
 
-        tempFormData.typeList = JSON.stringify(tempFormData.typeList);
+        this.setState({
+            loading: true
+        })
+
+        formData.typeList = JSON.stringify(formData.typeList);
 
         if (this.state.curId) {
             this.props.updateFormdata({
                 id: this.state.curId,
-                data: tempFormData,
+                data: formData,
                 vm: this
             })
         } else {
             this.props.saveFormData({
-                data: tempFormData,
+                data: formData,
                 vm: this
             })
         }
