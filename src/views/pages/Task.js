@@ -23,11 +23,13 @@ class Task extends Component {
         this.formRef = React.createRef();
 
         this.state = {
+            init: true,
             curId: null,
             loading: false,
             showDatePicker: false,
             showTypePicker: false,
             showUnitPicker: false,
+            currShowDateTime: '',
             typeColumns: [
                 [
                     { label: '仰卧起坐', value: '仰卧起坐' },
@@ -62,6 +64,9 @@ class Task extends Component {
     initFormData () {
         let formData = this.props.location.state;
         if (formData) {
+            // 格式化时间
+            this.formatTimeHandle(new Date(formData.dateTime) * 1);
+
             // 处理typeList
             let tempTypeList = JSON.parse(formData.typeList);
 
@@ -111,7 +116,7 @@ class Task extends Component {
     }
 
     render () {
-        let { curId, loading, showDatePicker, typeColumns, unitColumns, typeList } = this.state;
+        let { curId, loading, showDatePicker, currShowDateTime, typeColumns, unitColumns, typeList } = this.state;
 
         return (
             <div className="app-task">
@@ -155,7 +160,7 @@ class Task extends Component {
                             onClose={() => { this.setDatePickerHandle(false) }}
                         >
                             {
-                                value => value ? <span>{ this.formatTimeHandle(value * 1)  }</span> : <span style={{ color: '#cccccc' }}>请选择日期</span>
+                                value => value ? <span>{ currShowDateTime }</span> : <span style={{ color: '#cccccc' }}>请选择日期</span>
                             }
                         </DatePicker>
                     </Form.Item>
@@ -244,21 +249,46 @@ class Task extends Component {
     }
 
     formatTimeHandle (n) {
+        let type = this.props.location.type;
+        let formData = this.props.location.state;
         let d = new Date(n);
         let h = new Date();
+
+        if (this.state.init) {
+            if (type === 'copy') {
+                d = new Date();
+                h = new Date();
+            } else if (type === 'edit') {
+                d = new Date(n);
+                h = new Date(formData.dateTime);
+            }
+
+            this.setState({
+                init: false
+            })
+        }
+
         let year = String(d.getFullYear());
         let month = String(d.getMonth() + 1).padStart(2, '0');
         let date = String(d.getDate()).padStart(2, '0');
         let hour = String(h.getHours()).padStart(2, '0');
         let minute = String(h.getMinutes()).padStart(2, '0');
         let second = String(h.getSeconds()).padStart(2, '0');
-        return year + '-' + month + '-' + date + '' + ' ' + hour + ':' + minute + ':' + second;
+        let currShowDateTime = year + '-' + month + '-' + date + '' + ' ' + hour + ':' + minute + ':' + second;
+
+        this.setState({
+            currShowDateTime
+        })
     }
 
     setDatePickerHandle (tag) {
         this.setState({
             showDatePicker: tag
         })
+
+        if (!tag) {
+            this.formatTimeHandle(new Date(this.formRef.current.getFieldValue('dateTime')) * 1);
+        }
     }
 
     setItemPickerHandle (tag, index) {

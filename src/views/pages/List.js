@@ -163,7 +163,8 @@ class List extends Component {
                 Reflect.deleteProperty(formData, 'id');
                 this.props.history.push({
                     pathname: '/task',
-                    state: formData
+                    state: formData,
+                    type: 'copy'
                 })
             }
         })
@@ -174,7 +175,8 @@ class List extends Component {
         let formData = JSON.parse(JSON.stringify(this.state.maskData));
         this.props.history.push({
             pathname: '/task',
-            state: formData
+            state: formData,
+            type: 'edit'
         })
     }
 
