@@ -4,6 +4,8 @@ import { withRouter } from 'react-router';
 
 import { NoticeBar, Swiper, Image, Space, ErrorBlock } from 'antd-mobile';
 
+import MyDiary from 'components/myDiary/myDiary';
+
 class Home extends Component {
 
     constructor (props) {
@@ -39,9 +41,11 @@ class Home extends Component {
                     </Swiper.Item>
                 </Swiper>
 
-                <Space block direction='vertical'>
+                {/* <Space block direction='vertical'>
                     <ErrorBlock status='empty' title="正在开发中" description="先看看其他吧" />
-                </Space>
+                </Space> */}
+
+                <MyDiary/>
                 
             </div>
         )

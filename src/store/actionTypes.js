@@ -1,4 +1,20 @@
 
+// 获取日记
+export const GET_DIARY_DATA = 'getDiaryData';
+export const GET_DIARY_DATA_SAGA = 'getDiaryDataSaga';
+
+// 新增日记
+export const ADD_DIARY_DATA = 'addDiaryData';
+export const ADD_DIARY_DATA_SAGA = 'addDiaryDataSaga';
+
+// 更新日记
+export const UPDATE_DIARY_DATA = 'updateDiaryData';
+export const UPDATE_DIARY_DATA_SAGA = 'updateDiaryDataSaga';
+
+// 删除日记
+export const REMOVE_DIARY_DATA = 'removeDiaryData';
+export const REMOVE_DIARY_DATA_SAGA = 'removeDiaryDataSaga';
+
 // 获取数据
 export const GET_EXERCISE_DATA = 'getExerciseData';
 export const GET_EXERCISE_DATA_SAGA = 'getExerciseDataSaga';

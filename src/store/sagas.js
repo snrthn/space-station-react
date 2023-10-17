@@ -8,7 +8,15 @@ import { put, takeEvery } from 'redux-saga/effects';
 
 import { Toast } from 'antd-mobile';
 
-import { 
+import {    
+    GET_DIARY_DATA,
+    GET_DIARY_DATA_SAGA,
+    ADD_DIARY_DATA,
+    ADD_DIARY_DATA_SAGA,
+    UPDATE_DIARY_DATA,
+    UPDATE_DIARY_DATA_SAGA,
+    REMOVE_DIARY_DATA,
+    REMOVE_DIARY_DATA_SAGA,
     GET_EXERCISE_DATA,
     GET_EXERCISE_DATA_SAGA,
     ADD_EXERCISE_DATA,
@@ -28,6 +36,10 @@ import {
 } from './actionTypes';
 
 import {
+    queryDiaryList,
+    addDiaryInfo,
+    updateDiaryInfo,
+    deleteDiaryInfo,
     queryExerciseList,
     addExerciseInfo,
     updateExerciseInfo,
@@ -37,6 +49,143 @@ import {
     queryTipsContentHandle,
     updateTipsContentHandle
 } from 'api/exercise';
+
+
+
+// 获取日记
+function * queryDiaryListHandle (action) {
+    let { id, params, vm } = action;
+    let retData = null;
+
+    yield queryDiaryList({ params }).then(result => {
+        // 结果赋值
+        retData = result;
+
+        Toast.clear();
+        
+        // 更新数据
+        if (id) {
+
+            // 在Form表单中运行
+            let formData = retData.diary[0];
+
+            vm.setState({
+                formData
+            })
+
+            // 把详情更新到页面
+            vm.formRef.current.setFieldsValue(formData);
+
+        }
+
+    })
+    
+    yield put({
+        vm: action.vm,
+        id: action.id,
+        type: GET_DIARY_DATA,
+        isFirst: action.isFirst,
+        data: retData
+    })
+}
+
+
+// 新增日记
+function * addDiaryInfoHandle (action) {
+    let { data, vm } = action;
+    let retData = null;
+
+    yield addDiaryInfo({ data }).then(result => {
+        // 结果赋值
+        retData = result;
+
+        // 重置表单
+        vm.formRef.current?.resetFields();
+
+        vm.setState({
+            saveLoading: false,
+            isUpdate: false,
+            curInfo: {}
+        })
+        
+        // 重新获取日记
+        vm.queryDiaryHandle(true);
+    })
+    
+    yield put({
+        vm: action.vm,
+        type: ADD_DIARY_DATA,
+        data: retData
+    })
+}
+
+
+// 更新日记
+function * updateDiaryInfoHandle (action) {
+    let { id, data, vm } = action;
+    let retData = null;
+
+    yield updateDiaryInfo({ id, data }).then(result => {
+
+        Toast.clear();
+
+        Toast.show({
+            icon: 'success',
+            content: '更新成功！'
+        })
+
+        // 重置表单
+        vm.formRef.current?.resetFields();
+
+        vm.setState({
+            saveLoading: false,
+            isUpdate: false,
+            curInfo: {}
+        })
+
+        // 重新获取日记
+        vm.queryDiaryHandle(true);
+
+    })
+    
+    yield put({
+        vm,
+        type: UPDATE_DIARY_DATA,
+        id,
+        data
+    })
+}
+
+
+// 删除日记
+function * deleteDiaryInfoHandle (action) {
+    let { id, vm } = action;
+
+    yield deleteDiaryInfo({ id }).then(result => {
+
+        Toast.clear();
+
+        Toast.show({
+            icon: 'success',
+            content: '删除成功！'
+        })
+
+        vm.setState({
+            isUpdate: false,
+            curInfo: {}
+        })
+
+        // 重新获取日记
+        vm.queryDiaryHandle(true);
+
+    })
+    
+    yield put({
+        id,
+        vm: action.vm,
+        type: REMOVE_DIARY_DATA
+    })
+}
 
 
 // 获取数据
@@ -244,6 +393,18 @@ function * editTipsContentHandle (action) {
 
 
 function * mySagas () {
+    // 获取日记
+    yield takeEvery(GET_DIARY_DATA_SAGA, queryDiaryListHandle);
+
+    // 新增日记
+    yield takeEvery(ADD_DIARY_DATA_SAGA, addDiaryInfoHandle);
+
+    // 更新日记
+    yield takeEvery(UPDATE_DIARY_DATA_SAGA, updateDiaryInfoHandle);
+
+    // 删除日记
+    yield takeEvery(REMOVE_DIARY_DATA_SAGA, deleteDiaryInfoHandle);
+
     // 获取数据
     yield takeEvery(GET_EXERCISE_DATA_SAGA, queryExerciseListHandle);
 
