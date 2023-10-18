@@ -35,7 +35,7 @@ export default function (state = defaultStatus, action) {
             newState.diaryList.push(...action.data.diary);
         }
 
-        if (newState.diaryList.length >= action.data.diary.length) {
+        if (newState.diaryList.length >= action.data._results) {
             action.vm.setState({
                 listLoading: false,
                 hasMore: false
@@ -99,7 +99,10 @@ export default function (state = defaultStatus, action) {
             newState.exerciseList.push(...action.data.ex_recoder);
         }
 
-        if (newState.exerciseList.length >= action.data.ex_recoder.length) {
+        console.log(newState.exerciseList.length)
+        console.log(action)
+
+        if (newState.exerciseList.length >= action.data._results) {
             action.vm.setState({
                 loading: false,
                 hasMore: false

@@ -172,6 +172,9 @@ class myDiary extends Component {
 
     // 加载更多回调
     async loadMoreHandle () {
+        console.log(this.state.hasMore)
+        if (!this.state.hasMore) return;
+
         this.queryDiaryHandle(false);
 
         await sleep(1000);

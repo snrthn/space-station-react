@@ -116,6 +116,7 @@ class List extends Component {
 
     // 加载更多回调
     async loadMoreHandle () {
+        if (!this.state.hasMore) return;
         this.props.queryExerciseList({
             vm: this,
             isFirst: false,
