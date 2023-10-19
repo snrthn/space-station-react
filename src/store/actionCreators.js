@@ -89,7 +89,6 @@ export const uploadFileImage = function (options) {
     return {
         type: UPLOAD_FILE_IMAGE_SAGA,
         data: options.data,
-        updObj: options.updObj,
         vm: options.vm
     }
 };

@@ -26,7 +26,9 @@ let defaultStatus = {
 }
 
 export default function (state = defaultStatus, action) {
-    if (action.type === GET_DIARY_DATA) {        
+    if (action.type === UPLOAD_FILE_IMAGE) {
+        // console.log('文件上传成功');
+    } else if (action.type === GET_DIARY_DATA) {
         let newState = JSON.parse(JSON.stringify(state));
 
         if (action.isFirst) {

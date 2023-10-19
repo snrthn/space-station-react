@@ -4,15 +4,16 @@ import { withRouter } from 'react-router';
 
 import diaryStyle from './myDiary.less';
 
-import { addDiaryData, updateDiaryData, getDiaryData, removeDiaryData } from 'store/actionCreators';
+import { addDiaryData, updateDiaryData, getDiaryData, removeDiaryData, uploadFileImage } from 'store/actionCreators';
 
 import {
-    Form, Button, TextArea, ActionSheet, Modal,
-    List as AntList, PullToRefresh, InfiniteScroll, Toast
+    Form, Button, TextArea, ActionSheet, Modal, ImageUploader, Dialog, Mask,
+    List as AntList, PullToRefresh, InfiniteScroll, Toast, Grid, Image
 } from 'antd-mobile';
 
-import { UnorderedListOutline, SetOutline, SmileOutline } from 'antd-mobile-icons';
+import { UnorderedListOutline, SetOutline, SmileOutline, CloseCircleFill } from 'antd-mobile-icons';
 import { sleep } from 'antd-mobile/es/utils/sleep';
+
 
 class myDiary extends Component {
 
@@ -20,8 +21,19 @@ class myDiary extends Component {
         super(props);
 
         this.formRef = React.createRef();
+        this.updFile = React.createRef();
 
         this.state = {
+            fileList: [
+                // { url: 'https://www.snrthn.com/files/202207/1657905093146_981556.png' },
+                // { url: 'https://www.snrthn.com/files/202207/1657905093146_981556.png' },
+                // { url: 'https://www.snrthn.com/files/202207/1657905093146_981556.png' },
+                // { url: 'https://www.snrthn.com/files/202207/1657905093146_981556.png' },
+                // { url: 'https://www.snrthn.com/files/202207/1657905093146_981556.png' }
+            ],
+            maxCount: 9,
+            showImgMask: false,
+            curImgUrl: '',
             curInfo: {},
             isUpdate: false,
             saveLoading: false,
@@ -44,9 +56,7 @@ class myDiary extends Component {
     render () {
 
         let { diaryList } = this.props;
-        let { curInfo, hasMore, saveLoading, showActionSheet, actionsList, isUpdate } = this.state;
-
-        let curId = curInfo.id;
+        let { fileList, maxCount, curInfo, hasMore, saveLoading, showActionSheet, actionsList, isUpdate, showImgMask, curImgUrl } = this.state;
 
         return (
             <div className={ diaryStyle['my-diary'] }>
@@ -63,14 +73,47 @@ class myDiary extends Component {
                             </Button>
                         }
                     >
-                        <Form.Item name='content' rules={[{ required: true, message: '内容不能为空' }]}>
+                        <Form.Item name='content' rules={[{ required: false, message: '内容不能为空' }]}>
                             <TextArea
                                 placeholder='请输入你想说的…'
+                                className={ diaryStyle['form-textarea'] }
                                 maxLength={ 500 }
                                 rows={ 2 }
                                 showCount
                             />
                         </Form.Item>
+
+                        <Form.Item>
+
+                            <Grid columns={ 3 } gap={ 8 }>
+                                {
+                                    fileList.map((file, index) => {
+                                        return (
+                                            <Grid.Item className={ diaryStyle['img-grid-wrap'] } key={ index }>
+                                                <Image src={ file.url } width={ 100 } height={ 100 } fit='contain' onClick={ (event) => { this.showImgMaskHandle(event, file) } } />
+                                                <CloseCircleFill className={ diaryStyle['remove-img'] } color="#ff4400" onClick={ () => { this.removeImgHandle(index) } } />
+                                            </Grid.Item>
+                                        )
+                                    })
+                                }
+                                {
+                                    fileList.length < maxCount &&
+                                    <Grid.Item>
+                                        <input
+                                            multiple
+                                            type="file"
+                                            accept="image/*"
+                                            ref={ this.updFile }
+                                            style={{ display: 'none' }}
+                                            onChange={ (e) => { this.changeFileHandle(e.target.files) } }
+                                        />
+                                        <span className={ diaryStyle['upd-btn'] } onClick={ () => { this.clickUpdBtnHandle() } }>+</span>  
+                                    </Grid.Item>
+                                }
+                            </Grid>
+                                
+                        </Form.Item>
+
                     </Form>
                     
                 </div>
@@ -83,12 +126,25 @@ class myDiary extends Component {
                             return (
                                 <AntList.Item
                                     key={item.id}
-                                    title={item.content}
-                                    description={item.create_time}
-                                    style={{ '--adm-color-weak': '#333333' }}
-                                    prefix={<SmileOutline fontSize={30} />}
                                     onClick={ ()=> { this.clickItemHandle(item) } }
                                 >
+                                    <div className={ diaryStyle['list-item-content'] }>{ item.content }</div>
+                                    {
+                                        item.url &&
+                                        <Grid columns={ 3 } gap={ 8 } className={ diaryStyle['list-item-image'] }>
+                                            {
+                                                JSON.parse(item.url).map((url, index) => {
+                                                    return (
+                                                        <Grid.Item className={ diaryStyle['img-grid-wrap'] } key={ index }>
+                                                            <Image src={ url } width={ 90 } height={ 90 } fit='scale-down' onClick={ (event) => { this.showImgMaskHandle(event, { url }) } } />
+                                                        </Grid.Item>
+                                                    )
+                                                })
+                                            }
+                                        </Grid>
+
+                                    }
+                                    <div className={ diaryStyle['list-item-date'] }>{ item.create_time }</div>
                                 </AntList.Item>
                             )
                         }) }</AntList>
@@ -98,6 +154,12 @@ class myDiary extends Component {
                     </PullToRefresh>
                     
                 </div>
+
+                <Mask visible={ showImgMask } onMaskClick={ () => this.closeImgMaskHandle() }>
+                    <div className={ diaryStyle['mask-img-wrap'] }>
+                        <Image src={ curImgUrl } />
+                    </div>
+                </Mask>
 
                 <ActionSheet
                     visible={ showActionSheet }
@@ -124,7 +186,69 @@ class myDiary extends Component {
         return currShowDateTime;
     }
 
+    clickUpdBtnHandle () {
+        this.updFile.current.click();
+    }
+
+    changeFileHandle (files) {
+        let fileList = this.state.fileList;
+
+        Array.from(files).forEach((file) => {
+            fileList.push({
+                file,
+                key: file.lastModified,
+                name: file.name,
+                type: file.type,
+                url: URL.createObjectURL(file)
+            });
+
+        });
+
+        this.setState({
+            fileList
+        })
+
+        this.uploadFileHandle(Array.from(files));
+    }
+
+    uploadFileHandle (files) {
+        console.log(files);
+
+        this.props.uploadImages({
+            data: files,
+            vm: this
+        })
+    }
+
+    showImgMaskHandle (event, file) {
+        event.stopPropagation();
+        this.setState({
+            curImgUrl: file.url,
+            showImgMask: true
+        })
+    }
+
+    closeImgMaskHandle () {
+        this.setState({
+            curImgUrl: '',
+            showImgMask: false
+        })
+    }
+
+    removeImgHandle (index) {
+        let fileList = this.state.fileList;
+
+        fileList.splice(index, 1);
+
+        this.setState({
+            fileList
+        })
+    }
+
     submitHandle (form) {
+
+        form.url = JSON.stringify(this.state.fileList.map(item => item.url));
+
         this.setState({
             saveLoading: true
         })
@@ -241,7 +365,8 @@ class myDiary extends Component {
     // 编辑当前任务
     editCurDiaryInfo () {
         this.setState({
-            isUpdate: true
+            isUpdate: true,
+            fileList: this.state.curInfo.url ? JSON.parse(this.state.curInfo.url).map(item =>  { return { url: item } } ) : []
         })
         this.formRef.current.setFieldsValue(this.state.curInfo);
     }
@@ -289,6 +414,9 @@ function mapDispatchToActions (dispatch) {
         },
         deleteDiaryItem (options) {
             dispatch(removeDiaryData(options));
+        },
+        uploadImages (options) {
+            dispatch(uploadFileImage(options));
         }
     };
 }

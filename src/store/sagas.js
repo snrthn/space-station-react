@@ -105,6 +105,7 @@ function * addDiaryInfoHandle (action) {
         vm.setState({
             saveLoading: false,
             isUpdate: false,
+            fileList: [],
             curInfo: {}
         })
         
@@ -140,6 +141,7 @@ function * updateDiaryInfoHandle (action) {
         vm.setState({
             saveLoading: false,
             isUpdate: false,
+            fileList: [],
             curInfo: {}
         })
 
@@ -303,24 +305,27 @@ function * deleteExerciseInfoHandle (action) {
 
 // 上传文件
 function * uploadFileHandleHandle (action) {
-    let { vm, updObj, data } = action;
+    let { vm, data } = action;
     let retData = null;
 
     yield uploadFileHandle({ data }).then(result => {
         // 结果赋值
         retData = result;
 
-        // 更新数据
-        let url = retData.data.file[0];
+        let fileUrls = [];
         let fileList = vm.state.fileList;
 
-        fileList[0].status = 'success';
-        fileList[0].name = url.substr(url.lastIndexOf('/') + 1);
+        for (let key in retData.data) {
+            fileUrls.push(retData.data[key][0]);
+        }
 
-        vm.state.formData.exercise_img = url;
+        fileList.forEach((file, index) => {
+            if (index + fileUrls.length >= fileList.length) {
+                file.url = fileUrls[fileList.length - index - 1];
+            }
+        })
 
         vm.setState({
-            formData: vm.state.formData,
             fileList
         });
     })
