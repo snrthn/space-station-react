@@ -73,7 +73,7 @@ class myDiary extends Component {
                             </Button>
                         }
                     >
-                        <Form.Item name='content' rules={[{ required: false, message: '内容不能为空' }]}>
+                        <Form.Item name='content' rules={[{ required: true, message: '内容不能为空' }]}>
                             <TextArea
                                 placeholder='请输入你想说的…'
                                 className={ diaryStyle['form-textarea'] }
