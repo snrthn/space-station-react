@@ -33,6 +33,7 @@ class myDiary extends Component {
             ],
             maxCount: 9,
             showImgMask: false,
+            uploadLoading: false,
             curImgUrl: '',
             curInfo: {},
             isUpdate: false,
@@ -191,9 +192,22 @@ class myDiary extends Component {
     }
 
     changeFileHandle (files) {
+        let { maxCount } = this.state;
+        let tempFiles = Array.from(files);
         let fileList = this.state.fileList;
+        let selAllCount = tempFiles.length + fileList.length;
 
-        Array.from(files).forEach((file) => {
+        if (selAllCount > maxCount) {
+            console.log(maxCount - fileList.length)
+            tempFiles.splice(maxCount - fileList.length);
+
+            Toast.show({
+                content: `最多选${maxCount}张，你先了${selAllCount}张`,
+                maskClickable: false
+            })
+        }
+
+        tempFiles.forEach((file) => {
             fileList.push({
                 file,
                 key: file.lastModified,
@@ -208,7 +222,7 @@ class myDiary extends Component {
             fileList
         })
 
-        this.uploadFileHandle(Array.from(files));
+        this.uploadFileHandle(tempFiles);
     }
 
     uploadFileHandle (files) {
@@ -246,6 +260,24 @@ class myDiary extends Component {
     }
 
     submitHandle (form) {
+
+        let { uploadLoading, saveLoading } = this.state;
+
+        if (uploadLoading) {
+            Toast.show({
+                content: `图片正在上传中，请稍候…`,
+                maskClickable: false
+            })
+            return;
+        }
+
+        if (saveLoading) {
+            Toast.show({
+                content: `正在提交中，请稍候…`,
+                maskClickable: false
+            })
+            return;
+        }
 
         form.url = JSON.stringify(this.state.fileList.map(item => item.url));
 

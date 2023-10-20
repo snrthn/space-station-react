@@ -308,6 +308,10 @@ function * uploadFileHandleHandle (action) {
     let { vm, data } = action;
     let retData = null;
 
+    vm.setState({
+        uploadLoading: true
+    })
+
     yield uploadFileHandle({ data }).then(result => {
         // 结果赋值
         retData = result;
@@ -326,7 +330,12 @@ function * uploadFileHandleHandle (action) {
         })
 
         vm.setState({
+            uploadLoading: false,
             fileList
+        });
+    }).catch((err) => {
+        vm.setState({
+            uploadLoading: false
         });
     })
     
