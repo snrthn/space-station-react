@@ -1,0 +1,63 @@
+name: Build and Deploy React App
+
+on:
+  push:
+    branches: [ main ]  # 监听main分支的推送
+  workflow_dispatch:  # 允许手动触发部署
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # 使用Node 18，与你的依赖兼容
+          cache: 'npm'  # 缓存npm依赖，加速构建
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build  # 执行你的生产环境构建命令
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-output
+          path: dist  # 根据你的项目结构，可能需要调整为实际的构建输出目录
+
+  deploy:
+    needs: build  # 依赖build任务完成
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-output
+          path: dist
+
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 39.99.242.26
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            # 创建或清空目标目录
+            mkdir -p /usr/local/www/nginx/space
+            cd /usr/local/www/nginx/space
+            rm -rf *
+            
+            # 解压上传的文件
+            tar xzf -
+            
+            # 重启Web服务器（如果需要）
+            # sudo systemctl restart nginx
+        args:
+          # 将构建输出打包并传输到服务器
+          -C ./dist . | tar czf -
