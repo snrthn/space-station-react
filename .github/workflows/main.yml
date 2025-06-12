@@ -2,74 +2,85 @@ name: Build and Deploy React App
 
 on:
   push:
-    branches: [ main ]  # 监听main分支的推送
-  workflow_dispatch:  # 允许手动触发部署
+    branches: [ main ]  # 监听 main 分支推送
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # 1. 拉取代码（升级到 v4 最新版）
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      # 2. 配置 Node.js（保持 v3，已适配最新版）
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'  # 使用Node 18，与你的依赖兼容
-          cache: 'npm'  # 缓存npm依赖，加速构建
+          node-version: '18'
+          cache: 'npm'  # 缓存加速依赖安装
 
+      # 3. 安装依赖
       - name: Install dependencies
         run: npm install
 
+      # 4. 构建项目（根据实际命令调整，如 npm run build）
       - name: Build project
-        run: npm run build  # 执行你的生产环境构建命令
+        run: npm run build
 
+      # 5. 上传构建产物（升级到 v4，语法兼容 v3）
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-output
-          path: dist  # 根据你的项目结构，可能需要调整为实际的构建输出目录
+          path: dist  # 替换为你的实际构建输出目录（如 build、dist 等）
 
   deploy:
-    needs: build  # 依赖build任务完成
+    needs: build  # 依赖 build 完成
     runs-on: ubuntu-latest
     steps:
+      # 1. 下载构建产物（升级到 v4，语法兼容 v3）
       - name: Download build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build-output
           path: dist
 
+      # 2. 打包文件（可选，根据部署需求调整）
       - name: Package build files
-        run: tar czf build.tar.gz -C dist .  # 打包dist目录内容为tar.gz
+        run: tar czf build.tar.gz -C dist .
 
-      - name: Upload files to server
-        uses: appleboy/scp-action@master  # 使用scp-action上传文件
+      # 3. 上传文件到服务器（使用 scp-action 稳定版）
+      - name: Upload to server via SCP
+        uses: appleboy/scp-action@v1.0.0
         with:
-          host: 39.99.242.26
-          username: root
-          key: ${{ secrets.SPACE_STATION_REACT }}
-          port: 22
-          source: build.tar.gz
-          target: /tmp  # 上传到服务器的临时目录
+          host: ${{ secrets.SERVER_HOST }}      # 服务器 IP/域名（Secrets 中配置）
+          username: ${{ secrets.SERVER_USER }}  # 服务器用户名（Secrets 中配置）
+          key: ${{ secrets.SPACE_STATION_REACT }}   # SSH 私钥（Secrets 中配置）
+          port: 22                              # SSH 端口（默认 22，可修改）
+          source: build.tar.gz                  # 要上传的文件
+          target: /tmp                          # 服务器临时目录
 
-      - name: Deploy to server via SSH
+      # 4. SSH 执行部署脚本（解压、覆盖、重启服务等）
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: 39.99.242.26
-          username: root
-          key: ${{ secrets.SPACE_STATION_REACT }}
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            # 创建或清空目标目录
+            # 确保目标目录存在
             mkdir -p /usr/local/www/nginx/space
             cd /usr/local/www/nginx/space
+            
+            # 清空旧文件
             rm -rf *
             
-            # 从临时目录复制并解压文件
+            # 解压新文件（从临时目录复制）
             cp /tmp/build.tar.gz .
             tar xzf build.tar.gz
             rm build.tar.gz
             
-            # 重启Web服务器（如果需要）
+            # 重启服务（根据实际需求调整，如 Nginx）
             # sudo systemctl restart nginx
